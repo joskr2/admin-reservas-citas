@@ -12,6 +12,7 @@ import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
 const Header = () => {
 	const { theme, setTheme } = useTheme();
@@ -25,7 +26,7 @@ const Header = () => {
 
 	return (
 		<header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
-			<div className="container mx-auto flex h-14 items-center justify-between px-4">
+			<div className="container mx-auto flex h-12 items-center justify-between px-4">
 				{/* Logo */}
 				<Link href="/">
 					<Button
@@ -33,8 +34,10 @@ const Header = () => {
 						size="icon"
 						className="rounded-full hover:bg-accent/90 transition-all"
 					>
-						<img
+						<Image
 							src="/logo.svg"
+							width={32}
+							height={32}
 							alt="logo"
 							className="hover:scale-105 transition-transform"
 						/>
@@ -42,94 +45,92 @@ const Header = () => {
 				</Link>
 
 				{/* Botón de menú para móviles */}
-				<Button
-					variant="ghost"
-					size="icon"
-					className="md:hidden"
-					onClick={() => setIsMenuOpen(!isMenuOpen)}
-				>
-					<Menu className="h-5 w-5" />
-				</Button>
+				<div className="flex items-center gap-2">
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+						className=" md:hidden flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium w-fit "
+					>
+						{theme === "light" ? (
+							<div className="w-fit">
+								<Moon className="h-4 w-4" />
+								{/* <span>Modo oscuro</span> */}
+							</div>
+						) : (
+							<>
+								<Sun className="h-4 w-4" />
+								{/* <span>Modo claro</span> */}
+							</>
+						)}
+					</Button>
+					<Button
+						variant="ghost"
+						size="icon"
+						className="md:hidden"
+						onClick={() => setIsMenuOpen(!isMenuOpen)}
+					>
+						<Menu className="h-5 w-5" />
+					</Button>
+				</div>
 
-				{/* Navegación */}
 				<nav
 					className={`absolute top-14 left-0 w-full  md:static md:flex md:items-center md:gap-4 ${
 						isMenuOpen ? "block" : "hidden"
 					}`}
 				>
-					<div className="flex flex-col md:flex-row md:items-center md:gap-4 p-4 md:p-0">
+					<div className="flex flex-col md:flex-row md:items-center gap-2 items-end mr-4">
 						{user ? (
 							<>
 								<Link href="/">
-									<Button variant="ghost" className="w-full md:w-auto">
-										Dashboard
+									<Button variant="ghost" className="w-fit md:w-auto">
+										Inicio
 									</Button>
 								</Link>
 								<Link href="/tasks/new">
 									<Button variant="ghost" className="w-full md:w-auto">
-										New Task
+										Nueva tarea
 									</Button>
 								</Link>
 								<Link href="/settings">
 									<Button variant="ghost" className="w-full md:w-auto">
-										Settings
+										Configuraciones
 									</Button>
 								</Link>
 								<SignOutButton>
 									<Button
 										variant="outline"
 										size="sm"
-										className="w-full md:hidden" // Esta ya estaba correcta para móvil
+										className="w-full md:hidden"
 									>
-										Log out
+										Salir
 									</Button>
 								</SignOutButton>
 							</>
 						) : (
-							<>
-								{/* CORRECCIÓN AQUÍ: Cambiado md:w-auto a md:hidden */}
+							<div className="flex  gap-2 flex-col md:flex-row items-end">
 								<SignInButton mode="modal">
-									<Button variant="outline" className="w-full md:hidden">
-										Log in
+									<Button variant="outline" className="w-fit md:hidden">
+										Inicio sesión
 									</Button>
 								</SignInButton>
-								{/* CORRECCIÓN AQUÍ: Cambiado md:w-auto a md:hidden */}
-								<Link href="/register">
-									<Button className="w-full md:hidden">Register</Button>
-								</Link>
-							</>
+								{/* <Link href="/register">
+									<Button className="w-full md:hidden">Registro</Button>
+								</Link> */}
+							</div>
 						)}
-
-						{/* Botón de alternancia de tema para móviles */}
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-							className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium md:hidden"
-						>
-							{theme === "light" ? (
-								<>
-									<Moon className="h-4 w-4" />
-									<span>Dark Mode</span>
-								</>
-							) : (
-								<>
-									<Sun className="h-4 w-4" />
-									<span>Light Mode</span>
-								</>
-							)}
-						</Button>
 					</div>
 				</nav>
 
-				{/* Controles adicionales para escritorio */}
 				<div className="hidden md:flex items-center gap-4">
 					{user ? (
 						<>
-							<span className="text-sm">Hello, {user.firstName}</span>
+							<span className="text-sm">
+								Hola, {user?.firstName ?? "Usuario"}
+							</span>
 							<SignOutButton>
 								<Button variant="outline" size="sm">
-									Log out
+									Salir
 								</Button>
 							</SignOutButton>
 						</>
@@ -137,15 +138,16 @@ const Header = () => {
 						<>
 							{/* Estos son los botones para escritorio, que se mantienen */}
 							<SignInButton mode="modal">
-								<Button variant="ghost">Log in</Button>
+								<Button variant="ghost" className="w-fit">
+									Iniciar sesión
+								</Button>
 							</SignInButton>
-							<Link href="/register">
-								<Button>Register</Button>
-							</Link>
+							{/* <Link href="/register">
+								<Button>Registro</Button>
+							</Link> */}
 						</>
 					)}
 
-					{/* Botón de alternancia de tema para escritorio */}
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Button variant="ghost" size="icon" className="rounded-full">
@@ -158,13 +160,13 @@ const Header = () => {
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
 							<DropdownMenuItem onClick={() => setTheme("light")}>
-								Light
+								Claro
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => setTheme("dark")}>
-								Dark
+								Oscuro
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => setTheme("system")}>
-								System
+								Automático
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
