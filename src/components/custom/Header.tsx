@@ -45,7 +45,40 @@ const Header = () => {
 				</Link>
 
 				{/* Botón de menú para móviles */}
-				<div className="flex items-center gap-2">
+				{/* <div className="flex items-center gap-2">
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+						className=" md:hidden flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium w-fit "
+					>
+						{theme === "light" ? (
+							<div className="w-fit">
+								<Moon className="h-4 w-4" />
+								<span>Modo oscuro</span>
+							</div>
+						) : (
+							<>
+								<Sun className="h-4 w-4" />
+								<span>Modo claro</span>
+							</>
+						)}
+					</Button>
+					<Button
+						variant="ghost"
+						size="icon"
+						className="md:hidden"
+						onClick={() => setIsMenuOpen(!isMenuOpen)}
+					>
+						<Menu className="h-5 w-5" />
+					</Button>
+				</div> */}
+				<div className="flex  gap-2 flex-row items-end">
+					<SignInButton mode="modal">
+						<Button variant="ghost" className="w-fit md:hidden">
+							Inicio sesión
+						</Button>
+					</SignInButton>
 					<Button
 						variant="outline"
 						size="sm"
@@ -64,14 +97,9 @@ const Header = () => {
 							</>
 						)}
 					</Button>
-					<Button
-						variant="ghost"
-						size="icon"
-						className="md:hidden"
-						onClick={() => setIsMenuOpen(!isMenuOpen)}
-					>
-						<Menu className="h-5 w-5" />
-					</Button>
+					{/* <Link href="/register">
+									<Button className="w-full md:hidden">Registro</Button>
+								</Link> */}
 				</div>
 
 				<nav
@@ -150,7 +178,7 @@ const Header = () => {
 
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
-							<Button variant="ghost" size="icon" className="rounded-full">
+							<Button variant="outline" size="icon" className="rounded-md">
 								{theme === "light" ? (
 									<Moon className="h-5 w-5" />
 								) : (
@@ -160,10 +188,10 @@ const Header = () => {
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
 							<DropdownMenuItem onClick={() => setTheme("light")}>
-								Claro
+								Modo Claro
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => setTheme("dark")}>
-								Oscuro
+								Modo Oscuro
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => setTheme("system")}>
 								Automático
