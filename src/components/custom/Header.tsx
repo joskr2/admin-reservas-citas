@@ -26,14 +26,14 @@ const Header = () => {
   const isDarkTheme = theme === "dark";
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b border-primary/10 bg-background/60 backdrop-blur-lg">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-full hover:bg-accent/90 transition-all"
+            className="rounded-full hover:bg-accent/20 transition-all"
           >
             <Image
               src="/logo.svg"
@@ -43,9 +43,7 @@ const Header = () => {
               className="hover:scale-105 transition-transform"
             />
           </Button>
-          <span className="font-medium hidden sm:block">
-          Horizonte
-          </span>
+          <span className="font-medium hidden sm:block">Horizonte</span>
         </Link>
 
         {/* Controles de la derecha (escritorio) */}
@@ -54,12 +52,21 @@ const Header = () => {
             mode="modal"
             appearance={{ baseTheme: isDarkTheme ? dark : undefined }}
           >
-            <Button variant="ghost">Iniciar sesión</Button>
+            <Button
+              variant="secondary"
+              className="bg-secondary/80 backdrop-blur-sm hover:bg-secondary/90"
+            >
+              Iniciar sesión
+            </Button>
           </SignInButton>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="rounded-md">
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full border-primary/20 bg-background/50 backdrop-blur-sm"
+              >
                 {theme === "light" ? (
                   <Moon className="h-5 w-5" />
                 ) : (
@@ -67,7 +74,10 @@ const Header = () => {
                 )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent
+              align="end"
+              className="bg-background/80 backdrop-blur-md border border-primary/10"
+            >
               <DropdownMenuItem onClick={() => setTheme("light")}>
                 Modo Claro
               </DropdownMenuItem>
@@ -87,7 +97,11 @@ const Header = () => {
             mode="modal"
             appearance={{ baseTheme: isDarkTheme ? dark : undefined }}
           >
-            <Button variant="ghost" size="sm">
+            <Button
+              variant="secondary"
+              size="sm"
+              className="bg-secondary/80 backdrop-blur-sm hover:bg-secondary/90"
+            >
               Iniciar
             </Button>
           </SignInButton>
@@ -96,7 +110,7 @@ const Header = () => {
             variant="outline"
             size="icon"
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            className="md:hidden"
+            className="md:hidden rounded-full border-primary/20 bg-background/50 backdrop-blur-sm"
           >
             {theme === "light" ? (
               <Moon className="h-4 w-4" />

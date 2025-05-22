@@ -8,7 +8,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full border-t bg-background/95 backdrop-blur">
+    <footer className="w-full border-t border-primary/10 bg-background/60 backdrop-blur-lg">
       <div className="container mx-auto py-6 px-4">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
           {/* Logo */}
@@ -17,7 +17,7 @@ const Footer = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-full hover:bg-accent/90 transition-all"
+                className="rounded-full hover:bg-accent/20 transition-all"
               >
                 <Image
                   src="/logo.svg"
@@ -32,7 +32,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <div className="text-center md:text-right">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground backdrop-blur-sm py-1 px-3 rounded-full bg-background/30 inline-block">
               © {currentYear} Horizonte. Todos los derechos reservados.
             </p>
           </div>
