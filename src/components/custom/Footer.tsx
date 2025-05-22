@@ -10,9 +10,9 @@ const Footer = () => {
   return (
     <footer className="w-full border-t bg-background/95 backdrop-blur">
       <div className="container mx-auto py-6 px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Logo y descripción */}
-          <div className="flex flex-col space-y-3">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
+          {/* Logo */}
+          <div className="flex flex-col items-center md:flex-row md:items-center">
             <Link href="/">
               <Button
                 variant="ghost"
@@ -21,23 +21,19 @@ const Footer = () => {
               >
                 <Image
                   src="/logo.svg"
-                  width={32}
-                  height={32}
+                  width={48}
+                  height={48}
                   alt="logo"
-                  className="hover:scale-105 transition-transform"
+                  className="hover:scale-105 transition-transform filter grayscale opacity-75"
                 />
               </Button>
             </Link>
-            <p className="text-sm text-muted-foreground">
-            Horizonte
-            </p>
           </div>
 
           {/* Copyright */}
-          <div className="mt-8 pt-4 border-t text-center">
+          <div className="text-center md:text-right">
             <p className="text-sm text-muted-foreground">
-              © {currentYear} Admin Reservas Citas. Todos los derechos
-              reservados.
+              © {currentYear} Horizonte. Todos los derechos reservados.
             </p>
           </div>
         </div>
