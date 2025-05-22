@@ -9,17 +9,9 @@ export default function HomePage() {
         <h1 className="text-3xl font-bold mb-6">
           Bienvenido a Admin Reservas Citas
         </h1>
-        <p className="text-lg text-muted-foreground mb-8">
+        <p className="text-lg text-muted-foreground mb-4">
           Sistema de gestión de reservas y citas para tu negocio
         </p>
-
-        <div className="flex gap-4 mb-10">
-          <Link href="/sign-in">
-            <Button variant="default" size="lg">
-              Acceder como Administrador
-            </Button>
-          </Link>
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <div className="border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">

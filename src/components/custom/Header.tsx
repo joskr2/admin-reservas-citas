@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import { useUser, SignInButton, SignOutButton } from "@clerk/nextjs";
-import { Menu, X, Sun, Moon } from "lucide-react";
+import { SignInButton } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
+import { Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,13 +17,13 @@ import Image from "next/image";
 
 const Header = () => {
   const { theme, setTheme } = useTheme();
-  const { user } = useUser();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
   if (!mounted) return null;
+
+  const isDarkTheme = theme === "dark";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
@@ -47,46 +48,14 @@ const Header = () => {
           </span>
         </Link>
 
-        {/* Navegación de escritorio */}
-        <nav className="hidden md:flex items-center gap-6">
-          <Link
-            href="/"
-            className="text-sm font-medium hover:text-primary transition-colors"
-          >
-            Inicio
-          </Link>
-          <Link
-            href="/about"
-            className="text-sm font-medium hover:text-primary transition-colors"
-          >
-            Acerca de
-          </Link>
-          <Link
-            href="/contact"
-            className="text-sm font-medium hover:text-primary transition-colors"
-          >
-            Contacto
-          </Link>
-        </nav>
-
         {/* Controles de la derecha (escritorio) */}
         <div className="hidden md:flex items-center gap-4">
-          {user ? (
-            <>
-              <span className="text-sm">
-                Hola, {user?.firstName ?? "Usuario"}
-              </span>
-              <SignOutButton>
-                <Button variant="outline" size="sm">
-                  Salir
-                </Button>
-              </SignOutButton>
-            </>
-          ) : (
-            <SignInButton mode="modal">
-              <Button variant="ghost">Iniciar sesión</Button>
-            </SignInButton>
-          )}
+          <SignInButton
+            mode="modal"
+            appearance={{ baseTheme: isDarkTheme ? dark : undefined }}
+          >
+            <Button variant="ghost">Iniciar sesión</Button>
+          </SignInButton>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -114,21 +83,14 @@ const Header = () => {
 
         {/* Controles móviles */}
         <div className="flex items-center gap-2 md:hidden">
-          {!isMenuOpen && (
-            <>
-              {user ? (
-                <span className="text-sm mr-2">
-                  Hola, {user?.firstName ?? "Usuario"}
-                </span>
-              ) : (
-                <SignInButton mode="modal">
-                  <Button variant="ghost" size="sm">
-                    Iniciar
-                  </Button>
-                </SignInButton>
-              )}
-            </>
-          )}
+          <SignInButton
+            mode="modal"
+            appearance={{ baseTheme: isDarkTheme ? dark : undefined }}
+          >
+            <Button variant="ghost" size="sm">
+              Iniciar
+            </Button>
+          </SignInButton>
 
           <Button
             variant="outline"
@@ -142,67 +104,8 @@ const Header = () => {
               <Sun className="h-4 w-4" />
             )}
           </Button>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
-          </Button>
         </div>
       </div>
-
-      {/* Menú móvil */}
-      {isMenuOpen && (
-        <div className="md:hidden border-t p-4 bg-background/95 backdrop-blur">
-          <nav className="flex flex-col space-y-4">
-            <Link
-              href="/"
-              className="text-sm font-medium p-2 hover:bg-accent rounded-md transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Inicio
-            </Link>
-            <Link
-              href="/about"
-              className="text-sm font-medium p-2 hover:bg-accent rounded-md transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Acerca de
-            </Link>
-            <Link
-              href="/contact"
-              className="text-sm font-medium p-2 hover:bg-accent rounded-md transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Contacto
-            </Link>
-
-            {user && (
-              <>
-                <Link
-                  href="/settings"
-                  className="text-sm font-medium p-2 hover:bg-accent rounded-md transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Configuraciones
-                </Link>
-                <SignOutButton>
-                  <Button variant="outline" size="sm" className="w-full mt-2">
-                    Salir
-                  </Button>
-                </SignOutButton>
-              </>
-            )}
-          </nav>
-        </div>
-      )}
     </header>
   );
 };
