@@ -44,7 +44,7 @@ const Header = () => {
             />
           </Button>
           <span className="font-medium hidden sm:block">
-            Admin Reservas Citas
+          Horizonte
           </span>
         </Link>
 
