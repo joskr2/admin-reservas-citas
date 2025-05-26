@@ -1,0 +1,296 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+  type Cita,
+  obtenerCitasUsuario,
+  obtenerUsuarioAutenticado,
+} from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PlusCircle, ChevronLeft, ChevronRight, Calendar, Clock, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useAuth } from "@clerk/nextjs";
+
+interface CitaDia {
+  fecha: string;
+  citas: Cita[];
+}
+
+export default function CalendarioCitas() {
+  const [citas, setCitas] = useState<Cita[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fechaActual, setFechaActual] = useState(new Date());
+  const { userId } = useAuth();
+  const usuario = obtenerUsuarioAutenticado(userId);
+  const router = useRouter();
+  const esPsicologo = usuario.tipo === "psicologo";
+
+  useEffect(() => {
+    const cargarCitas = async () => {
+      setIsLoading(true);
+      try {
+        const response = await obtenerCitasUsuario(usuario.id);
+        if (response.success && response.data) {
+          setCitas(response.data);
+        } else {
+          toast.error("Error al cargar las citas");
+        }
+      } catch (error) {
+        console.error("Error al cargar citas:", error);
+        toast.error("Ha ocurrido un error al cargar las citas");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    cargarCitas();
+  }, [usuario.id]);
+
+  const handleNuevaCita = () => {
+    router.push("/admin/citas/nueva");
+  };
+
+  const obtenerDiasDelMes = (fecha: Date) => {
+    const año = fecha.getFullYear();
+    const mes = fecha.getMonth();
+    
+    // Primer día del mes
+    const primerDia = new Date(año, mes, 1);
+    // Último día del mes
+    const ultimoDia = new Date(año, mes + 1, 0);
+    
+    // Obtener el día de la semana del primer día (0 = domingo, 1 = lunes, etc.)
+    const primerDiaSemana = primerDia.getDay();
+    
+    // Días a mostrar (incluyendo días del mes anterior y siguiente para completar la grilla)
+    const diasAMostrar: Date[] = [];
+    
+    // Agregar días del mes anterior para completar la primera semana
+    for (let i = primerDiaSemana - 1; i >= 0; i--) {
+      diasAMostrar.push(new Date(año, mes, -i));
+    }
+    
+    // Agregar todos los días del mes actual
+    for (let dia = 1; dia <= ultimoDia.getDate(); dia++) {
+      diasAMostrar.push(new Date(año, mes, dia));
+    }
+    
+    // Agregar días del mes siguiente para completar la última semana
+    const diasRestantes = 42 - diasAMostrar.length; // 6 semanas x 7 días = 42
+    for (let dia = 1; dia <= diasRestantes; dia++) {
+      diasAMostrar.push(new Date(año, mes + 1, dia));
+    }
+    
+    return diasAMostrar;
+  };
+
+  const obtenerCitasDelDia = (fecha: Date): Cita[] => {
+    const fechaStr = fecha.toISOString().split('T')[0];
+    return citas.filter(cita => cita.fecha === fechaStr);
+  };
+
+  const mesAnterior = () => {
+    setFechaActual(new Date(fechaActual.getFullYear(), fechaActual.getMonth() - 1, 1));
+  };
+
+  const mesSiguiente = () => {
+    setFechaActual(new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 1));
+  };
+
+  const esMesActual = (fecha: Date): boolean => {
+    return fecha.getMonth() === fechaActual.getMonth();
+  };
+
+  const esHoy = (fecha: Date): boolean => {
+    const hoy = new Date();
+    return fecha.toDateString() === hoy.toDateString();
+  };
+
+  const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  const meses = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"/>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Calendario de Citas</h1>
+            <p className="text-gray-600">Gestiona tu agenda de manera visual y eficiente</p>
+          </div>
+          {esPsicologo && (
+            <Button 
+              onClick={handleNuevaCita}
+              size="lg"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105"
+            >
+              <PlusCircle className="mr-2 h-5 w-5" />
+              Nueva Cita
+            </Button>
+          )}
+        </div>
+
+        {/* Calendario */}
+        <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+          <CardHeader className="pb-4">
+            <div className="flex justify-between items-center">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={mesAnterior}
+                className="hover:bg-blue-50"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              
+              <CardTitle className="text-2xl font-bold text-center">
+                {meses[fechaActual.getMonth()]} {fechaActual.getFullYear()}
+              </CardTitle>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={mesSiguiente}
+                className="hover:bg-blue-50"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardHeader>
+          
+          <CardContent>
+            {/* Días de la semana */}
+            <div className="grid grid-cols-7 gap-1 mb-4">
+              {diasSemana.map(dia => (
+                <div key={dia} className="p-3 text-center font-semibold text-gray-600 bg-gray-50 rounded-lg">
+                  {dia}
+                </div>
+              ))}
+            </div>
+
+            {/* Grilla del calendario */}
+            <div className="grid grid-cols-7 gap-1">
+              {obtenerDiasDelMes(fechaActual).map((fecha, index) => {
+                const citasDelDia = obtenerCitasDelDia(fecha);
+                const esDelMesActual = esMesActual(fecha);
+                const esEsteHoy = esHoy(fecha);
+                
+                return (
+                  <div
+                    key={`${fecha.getFullYear()}-${fecha.getMonth()}-${fecha.getDate()}-${index}`}
+                    className={`min-h-[120px] p-2 border rounded-lg transition-all duration-200 hover:shadow-md ${
+                      esDelMesActual 
+                        ? esEsteHoy 
+                          ? 'bg-blue-50 border-blue-300 shadow-md' 
+                          : 'bg-white border-gray-200 hover:bg-gray-50'
+                        : 'bg-gray-50 border-gray-100 text-gray-400'
+                    }`}
+                  >
+                    <div className={`text-sm font-medium mb-2 ${
+                      esEsteHoy ? 'text-blue-600' : esDelMesActual ? 'text-gray-900' : 'text-gray-400'
+                    }`}>
+                      {fecha.getDate()}
+                    </div>
+                    
+                    {citasDelDia.length > 0 && (
+                      <div className="space-y-1">
+                        {citasDelDia.slice(0, 2).map((cita) => (
+                          <div
+                            key={cita.id}
+                            className="text-xs p-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded truncate cursor-pointer hover:from-blue-600 hover:to-purple-600 transition-all duration-200"
+                            title={`${cita.hora_inicio} - ${cita.cliente.nombre}`}
+                          >
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              <span>{cita.hora_inicio}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <User className="w-3 h-3" />
+                              <span className="truncate">{cita.cliente.nombre}</span>
+                            </div>
+                          </div>
+                        ))}
+                        {citasDelDia.length > 2 && (
+                          <div className="text-xs text-gray-600 text-center py-1">
+                            +{citasDelDia.length - 2} más
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Resumen del día actual */}
+        {esHoy(fechaActual) && (
+          <Card className="mt-8 shadow-lg border-0 bg-white/90 backdrop-blur-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-blue-600" />
+                Citas de Hoy
+              </CardTitle>
+              <CardDescription>
+                {obtenerCitasDelDia(new Date()).length} citas programadas para hoy
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {obtenerCitasDelDia(new Date()).length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                  <p>No tienes citas programadas para hoy</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {obtenerCitasDelDia(new Date()).map((cita) => (
+                    <div key={cita.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                          <User className="w-6 h-6 text-blue-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">{cita.cliente.nombre}</h3>
+                          <p className="text-sm text-gray-600">{cita.cliente.correo}</p>
+                          <p className="text-sm text-gray-500">Habitación {cita.habitacion.numero}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                          <Clock className="w-4 h-4" />
+                          <span>{cita.hora_inicio} - {cita.hora_fin}</span>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          cita.estado === 'pendiente' ? 'bg-yellow-100 text-yellow-800' :
+                          cita.estado === 'en_progreso' ? 'bg-blue-100 text-blue-800' :
+                          'bg-green-100 text-green-800'
+                        }`}>
+                          {cita.estado === 'pendiente' ? 'Pendiente' :
+                           cita.estado === 'en_progreso' ? 'En Progreso' : 'Terminada'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
+}

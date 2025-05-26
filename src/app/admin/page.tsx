@@ -3,13 +3,14 @@ import { redirect } from "next/navigation";
 import ClientLayout from "@/components/client-layout";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Calendar, Settings, Users } from "lucide-react";
 
 export default async function AdminPage() {
-  const { userId } = auth();
+  const { userId } = await auth();
 
   // Redireccionar si el usuario no está autenticado
   if (!userId) {
-    redirect("/sign-in");
+    redirect("/");
   }
 
   // Obtener datos del usuario completos
@@ -51,23 +52,36 @@ export default async function AdminPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-card rounded-lg border p-6 hover:shadow-md transition-shadow">
-            <h3 className="text-xl font-semibold mb-3">Gestionar Reservas</h3>
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-xl font-semibold">Gestionar Citas</h3>
+              <Users className="h-6 w-6 text-primary" />
+            </div>
             <p className="text-muted-foreground mb-4">
-              Administra todas las reservas y citas pendientes.
+              Administra las citas con pacientes, inicia o termina sesiones.
             </p>
-            <Button className="w-full">Ver Reservas</Button>
+            <Button className="w-full" asChild>
+              <Link href="/admin/citas">Ver Citas</Link>
+            </Button>
           </div>
 
           <div className="bg-card rounded-lg border p-6 hover:shadow-md transition-shadow">
-            <h3 className="text-xl font-semibold mb-3">Calendario</h3>
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-xl font-semibold">Calendario</h3>
+              <Calendar className="h-6 w-6 text-primary" />
+            </div>
             <p className="text-muted-foreground mb-4">
               Visualiza y organiza las citas programadas.
             </p>
-            <Button className="w-full">Ver Calendario</Button>
+            <Button className="w-full" asChild>
+              <Link href="/admin/citas">Ver Calendario</Link>
+            </Button>
           </div>
 
           <div className="bg-card rounded-lg border p-6 hover:shadow-md transition-shadow">
-            <h3 className="text-xl font-semibold mb-3">Configuración</h3>
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-xl font-semibold">Configuración</h3>
+              <Settings className="h-6 w-6 text-primary" />
+            </div>
             <p className="text-muted-foreground mb-4">
               Ajusta las preferencias de tu sistema de reservas.
             </p>

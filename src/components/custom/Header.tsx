@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import {
   SignInButton,
-  UserButton,
   SignOutButton,
   useUser,
 } from "@clerk/nextjs";
@@ -16,8 +15,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
+  DropdownMenuItem
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Image from "next/image";
