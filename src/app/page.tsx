@@ -1,6 +1,5 @@
 "use client";
 
-import ClientLayout from "@/components/client-layout";
 import AppHeader from "@/components/layout/AppHeader";
 import AppFooter from "@/components/layout/AppFooter";
 import { Button } from "@/components/ui/button";

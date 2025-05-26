@@ -86,11 +86,6 @@ export default function CrearCitaForm() {
 				return;
 			}
 
-			// Crear timestamp con fecha y hora para crear un datetime correcto
-			const fechaISO = new Date(
-				`${values.fecha}T${values.horaInicio}`,
-			).toISOString();
-
 			// Preparar los datos para enviar a la API
 			const citaData = {
 				psicologo: {
@@ -103,7 +98,7 @@ export default function CrearCitaForm() {
 					nombre: values.nombreCliente,
 					correo: values.correoCliente,
 				},
-				fecha: fechaISO,
+				fecha: values.fecha, // Enviar la fecha en formato YYYY-MM-DD
 				hora_inicio: values.horaInicio,
 				hora_fin: values.horaFin,
 				habitacion: values.habitacion,
