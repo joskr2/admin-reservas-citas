@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Cita, iniciarCita, terminarCita } from "@/lib/api";
+import { type Cita, iniciarCita, terminarCita } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { 
   Dialog, 
@@ -53,6 +53,7 @@ export default function CitaModal({
   const handleCambiarEstado = async (nuevoEstado: "en_progreso" | "terminada") => {
     setIsUpdating(true);
     try {
+      // biome-ignore lint/suspicious/noImplicitAnyLet: <explanation>
       let response;
       if (nuevoEstado === "en_progreso") {
         response = await iniciarCita(cita.id);

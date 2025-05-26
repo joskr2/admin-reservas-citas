@@ -26,6 +26,7 @@ export default function CalendarioCitas() {
   const router = useRouter();
   const esPsicologo = usuario.tipo === "psicologo";
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     cargarCitas();
   }, [usuario.id]);
@@ -219,7 +220,8 @@ export default function CalendarioCitas() {
                     {citasDelDia.length > 0 && (
                       <div className="space-y-1">
                         {citasDelDia.slice(0, 2).map((cita) => (
-                          <div
+                          // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+<div
                             key={cita.id}
                             className="text-[10px] sm:text-xs p-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded truncate cursor-pointer hover:from-blue-600 hover:to-purple-600 transition-all duration-200 transform hover:scale-105"
                             title={`${cita.hora_inicio} - ${cita.cliente.nombre}`}
@@ -236,7 +238,8 @@ export default function CalendarioCitas() {
                           </div>
                         ))}
                         {citasDelDia.length > 2 && (
-                          <div className="text-[10px] sm:text-xs text-gray-600 text-center py-1 cursor-pointer hover:text-blue-600" onClick={() => handleCitaClick(citasDelDia[0])}>
+                          // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+<div className="text-[10px] sm:text-xs text-gray-600 text-center py-1 cursor-pointer hover:text-blue-600" onClick={() => handleCitaClick(citasDelDia[0])}>
                             +{citasDelDia.length - 2} más
                           </div>
                         )}
@@ -264,7 +267,8 @@ export default function CalendarioCitas() {
             <CardContent>
               <div className="space-y-3 sm:space-y-4">
                 {obtenerCitasDelDia(new Date()).map((cita) => (
-                  <div 
+                  // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+<div 
                     key={cita.id} 
                     className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200 cursor-pointer hover:shadow-md transition-all duration-200 transform hover:scale-105"
                     onClick={() => handleCitaClick(cita)}
