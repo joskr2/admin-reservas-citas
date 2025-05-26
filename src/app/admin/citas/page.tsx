@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import CalendarioCitas from "@/components/custom/CalendarioCitas";
+import CalendarioMejorado from "@/components/custom/CalendarioMejorado";
 
 export const metadata: Metadata = {
   title: "Calendario de Citas | Sistema de Reservas",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function CitasPage() {
-  return <CalendarioCitas />;
+  return <CalendarioMejorado />;
 }
