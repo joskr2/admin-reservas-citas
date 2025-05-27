@@ -16,6 +16,7 @@ const MOCK_PROFILES = [
 ];
 
 export default function AdminPage() {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const [currentProfile, setCurrentProfile] = useState<any>(null);
   const router = useRouter();
 
