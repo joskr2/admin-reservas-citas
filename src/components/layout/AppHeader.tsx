@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 interface AppHeaderProps {
@@ -28,6 +28,16 @@ export default function AppHeader({
   const router = useRouter();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const isHomePage = pathname === "/";
   const isCalendarPage = pathname === "/admin/citas";
@@ -55,7 +65,12 @@ export default function AppHeader({
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200/80 bg-white/95 backdrop-blur-md shadow-sm">
+    <header className={cn(
+      "sticky top-0 z-[100] w-full border-b transition-all duration-300",
+      isScrolled 
+        ? "border-gray-200/80 bg-white/90 backdrop-blur-xl shadow-lg" 
+        : "border-gray-200/50 bg-white/70 backdrop-blur-sm shadow-sm"
+    )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo y navegación principal */}

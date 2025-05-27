@@ -1,7 +1,4 @@
 "use client";
-
-import AppHeader from "@/components/layout/AppHeader";
-import AppFooter from "@/components/layout/AppFooter";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,15 +9,9 @@ import {
 } from "@/components/ui/card";
 import {
   CalendarIcon,
-  ClockIcon,
-  UserIcon,
-  BuildingIcon,
-  BellIcon,
-  BarChart3Icon,
   ArrowRightIcon,
   SparklesIcon,
   HeartHandshakeIcon,
-  ShieldCheckIcon,
   PlusCircle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -44,7 +35,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
+    <div className="fixed inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col overflow-auto">
       <main className="flex-1 overflow-hidden">
         {/* Elementos decorativos de fondo */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
