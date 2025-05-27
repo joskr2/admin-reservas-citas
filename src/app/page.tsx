@@ -3,8 +3,26 @@
 import AppHeader from "@/components/layout/AppHeader";
 import AppFooter from "@/components/layout/AppFooter";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarIcon, ClockIcon, UserIcon, BuildingIcon, BellIcon, BarChart3Icon, ArrowRightIcon, SparklesIcon, HeartHandshakeIcon, ShieldCheckIcon, PlusCircle } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  CalendarIcon,
+  ClockIcon,
+  UserIcon,
+  BuildingIcon,
+  BellIcon,
+  BarChart3Icon,
+  ArrowRightIcon,
+  SparklesIcon,
+  HeartHandshakeIcon,
+  ShieldCheckIcon,
+  PlusCircle,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
@@ -14,15 +32,15 @@ export default function HomePage() {
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6 }
+    transition: { duration: 0.6 },
   };
 
   const staggerChildren = {
     animate: {
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   return (
@@ -37,7 +55,7 @@ export default function HomePage() {
         </div>
 
         {/* Hero Section */}
-        <motion.div 
+        <motion.div
           className="relative pt-16 pb-24 px-4 sm:px-6 lg:px-8"
           initial="initial"
           animate="animate"
@@ -45,7 +63,7 @@ export default function HomePage() {
         >
           <div className="max-w-7xl mx-auto">
             <motion.div className="text-center mb-16" variants={fadeInUp}>
-              <motion.div 
+              <motion.div
                 className="flex items-center justify-center mb-8"
                 variants={fadeInUp}
               >
@@ -58,8 +76,8 @@ export default function HomePage() {
                   </div>
                 </div>
               </motion.div>
-              
-              <motion.h1 
+
+              <motion.h1
                 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6"
                 variants={fadeInUp}
               >
@@ -70,32 +88,34 @@ export default function HomePage() {
                   Horizonte
                 </span>
               </motion.h1>
-              
-              <motion.p 
+
+              <motion.p
                 className="text-xl sm:text-2xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed"
                 variants={fadeInUp}
               >
                 Tu plataforma integral para la gestión profesional de{" "}
-                <span className="text-purple-600 font-semibold">consultas psicológicas</span>
+                <span className="text-purple-600 font-semibold">
+                  consultas psicológicas
+                </span>
               </motion.p>
-              
-              <motion.div 
+
+              <motion.div
                 className="flex flex-col sm:flex-row gap-4 justify-center items-center"
                 variants={fadeInUp}
               >
-                <Button 
-                  size="lg" 
-                  className="h-16 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
-                  onClick={() => router.push('/admin/citas/nueva')}
+                <Button
+                  size="lg"
+                  className="hidden sm:inline-flex h-16 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
+                  onClick={() => router.push("/admin/citas/nueva")}
                 >
                   <CalendarIcon className="w-6 h-6 mr-3" />
                   Programar Nueva Cita
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
+                <Button
+                  variant="outline"
+                  size="lg"
                   className="h-16 px-8 border-2 border-gray-300 hover:border-blue-500 text-gray-700 hover:text-blue-600 font-semibold rounded-xl transition-all duration-300 hover:bg-blue-50"
-                  onClick={() => router.push('/admin/citas')}
+                  onClick={() => router.push("/admin/citas")}
                 >
                   Ver Calendario
                   <ArrowRightIcon className="w-5 h-5 ml-3" />
@@ -104,25 +124,28 @@ export default function HomePage() {
             </motion.div>
 
             {/* Features Grid */}
-            <motion.div 
+            <motion.div
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 lg:gap-8"
               variants={staggerChildren}
             >
               {/* Gestión de Citas */}
               <motion.div variants={fadeInUp}>
-                <Card 
+                <Card
                   className="group h-full shadow-xl border-0 bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:bg-white/90 cursor-pointer"
-                  onClick={() => router.push('/admin/citas')}
+                  onClick={() => router.push("/admin/citas")}
                 >
                   <CardHeader className="text-center pb-4">
                     <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                       <CalendarIcon className="w-8 h-8 text-blue-600" />
                     </div>
-                    <CardTitle className="text-xl font-bold text-gray-900">Calendario de Citas</CardTitle>
+                    <CardTitle className="text-xl font-bold text-gray-900">
+                      Calendario de Citas
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
                     <CardDescription className="text-gray-600 mb-6 leading-relaxed">
-                      Visualiza y administra todas tus citas en un calendario intuitivo y moderno.
+                      Visualiza y administra todas tus citas en un calendario
+                      intuitivo y moderno.
                     </CardDescription>
                     <div className="flex items-center justify-center text-blue-600 font-medium group-hover:text-blue-700 transition-colors">
                       Acceder
@@ -134,15 +157,17 @@ export default function HomePage() {
 
               {/* Nueva Cita */}
               <motion.div variants={fadeInUp}>
-                <Card 
+                <Card
                   className="group h-full shadow-xl border-0 bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:bg-white/90 cursor-pointer"
-                  onClick={() => router.push('/admin/citas/nueva')}
+                  onClick={() => router.push("/admin/citas/nueva")}
                 >
                   <CardHeader className="text-center pb-4">
                     <div className="w-16 h-16 bg-gradient-to-r from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                       <PlusCircle className="w-8 h-8 text-purple-600" />
                     </div>
-                    <CardTitle className="text-xl font-bold text-gray-900">Nueva Cita</CardTitle>
+                    <CardTitle className="text-xl font-bold text-gray-900">
+                      Nueva Cita
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
                     <CardDescription className="text-gray-600 mb-6 leading-relaxed">
@@ -155,10 +180,7 @@ export default function HomePage() {
                   </CardContent>
                 </Card>
               </motion.div>
-
-
             </motion.div>
-
           </div>
         </motion.div>
       </main>
