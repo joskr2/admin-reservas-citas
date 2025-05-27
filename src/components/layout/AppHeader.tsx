@@ -118,14 +118,15 @@ export default function AppHeader({
           {/* Usuario y menú mobile */}
           <div className="flex items-center gap-2">
             {/* Usuario */}
-            <Button
-              size="sm"
-              className=" hidden sm:inline-flex  h-10 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
-              onClick={() => router.push("/login")}
-            >
-              <LogInIcon className="w-fit h-6 mr-3" />
-              Inicio de sesión
-            </Button>
+            <Link href="/login">
+              <Button
+                size="sm"
+                className=" hidden sm:inline-flex  h-10 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
+              >
+                <LogInIcon className="w-fit h-6 mr-3" />
+                Inicio de sesión
+              </Button>
+            </Link>
 
             {/* Menú hamburguesa para mobile */}
             <Button
@@ -170,17 +171,15 @@ export default function AppHeader({
             </nav>
 
             {/* Usuario en mobile */}
-            <Button
-              size="sm"
-              className="mt-4 h-10 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
-              onClick={() => {
-                router.push("/login");
-                setIsMenuOpen(false);
-              }}
-            >
-              <LogInIcon className="w-fit h-6 mr-3" />
-              Inicio de sesión
-            </Button>
+            <Link href="/login">
+              <Button
+                size="sm"
+                className="mt-4 h-10 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
+              >
+                <LogInIcon className="w-fit h-6 mr-3" />
+                Inicio de sesión
+              </Button>
+            </Link>
           </div>
         )}
       </div>

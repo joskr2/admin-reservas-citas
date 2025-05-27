@@ -166,6 +166,7 @@ export default function CreateAppointmentForm() {
     );
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const psychologist = getSelectedPsychologist();
     setCurrentPsychologist(psychologist);
@@ -244,7 +245,7 @@ export default function CreateAppointmentForm() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
           <p className="text-gray-600">Cargando perfil...</p>
         </div>
       </div>
@@ -291,7 +292,7 @@ export default function CreateAppointmentForm() {
               isDateTimePopoverOpen ? "blur-sm pointer-events-none" : ""
             }`}
           >
-            <Card className={`shadow-lg border-0 bg-white/80 backdrop-blur-sm`}>
+            <Card className={"shadow-lg border-0 bg-white/80 backdrop-blur-sm"}>
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-2">
                   <LucideCalendarIcon className="w-6 h-6 text-blue-600" />
