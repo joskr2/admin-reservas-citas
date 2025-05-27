@@ -38,7 +38,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <main className="min-h-screen flex flex-col justify-center">
         {/* Elementos decorativos de fondo */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -74,7 +74,7 @@ export default function HomePage() {
                 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6"
                 variants={fadeInUp}
               >
-                <span className="bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
                   Bienvenido a{" "}
                 </span>
                 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -83,11 +83,11 @@ export default function HomePage() {
               </motion.h1>
 
               <motion.p
-                className="text-xl sm:text-2xl text-gray-600 mb-8 max-w-4xl mx-auto leading-relaxed"
+                className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed"
                 variants={fadeInUp}
               >
                 Tu plataforma integral para la gestión profesional de{" "}
-                <span className="text-purple-600 font-semibold">
+                <span className="text-purple-600 dark:text-purple-400 font-semibold">
                   consultas psicológicas
                 </span>
               </motion.p>
@@ -160,23 +160,23 @@ export default function HomePage() {
               {/* Gestión de Citas */}
               <motion.div variants={fadeInUp}>
                 <Card
-                  className="group h-full shadow-xl border-0 bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:bg-white/90 cursor-pointer"
+                  className="group h-full shadow-xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:bg-white/90 dark:hover:bg-gray-800/90 cursor-pointer"
                   onClick={() => router.push("/admin/citas")}
                 >
                   <CardHeader className="text-center pb-4">
                     <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                       <CalendarIcon className="w-8 h-8 text-blue-600" />
                     </div>
-                    <CardTitle className="text-xl font-bold text-gray-900">
+                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-gray-100">
                       Calendario de Citas
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
-                    <CardDescription className="text-gray-600 mb-6 leading-relaxed">
+                    <CardDescription className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
                       Visualiza y administra todas tus citas en un calendario
                       intuitivo y moderno.
                     </CardDescription>
-                    <div className="flex items-center justify-center text-blue-600 font-medium group-hover:text-blue-700 transition-colors">
+                    <div className="flex items-center justify-center text-blue-600 dark:text-blue-400 font-medium group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">
                       Acceder
                       <ArrowRightIcon className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </div>
@@ -187,22 +187,22 @@ export default function HomePage() {
               {/* Nueva Cita */}
               <motion.div variants={fadeInUp}>
                 <Card
-                  className="group h-full shadow-xl border-0 bg-white/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:bg-white/90 cursor-pointer"
+                  className="group h-full shadow-xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:bg-white/90 dark:hover:bg-gray-800/90 cursor-pointer"
                   onClick={() => router.push("/admin/citas/nueva")}
                 >
                   <CardHeader className="text-center pb-4">
                     <div className="w-16 h-16 bg-gradient-to-r from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                       <PlusCircle className="w-8 h-8 text-purple-600" />
                     </div>
-                    <CardTitle className="text-xl font-bold text-gray-900">
+                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-gray-100">
                       Nueva Cita
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
-                    <CardDescription className="text-gray-600 mb-6 leading-relaxed">
+                    <CardDescription className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
                       Programa una nueva consulta de forma rápida y sencilla.
                     </CardDescription>
-                    <div className="flex items-center justify-center text-purple-600 font-medium group-hover:text-purple-700 transition-colors">
+                    <div className="flex items-center justify-center text-purple-600 dark:text-purple-400 font-medium group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors">
                       Programar
                       <ArrowRightIcon className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </div>

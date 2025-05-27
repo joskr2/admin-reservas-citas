@@ -15,6 +15,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 interface AppHeaderProps {
   showBackButton?: boolean;
@@ -70,8 +71,8 @@ export default function AppHeader({
     <header className={cn(
       "sticky top-0 z-[100] w-full border-b transition-all duration-300",
       isScrolled 
-        ? "border-gray-200/80 bg-white/90 backdrop-blur-xl shadow-lg" 
-        : "border-gray-200/50 bg-white/70 backdrop-blur-sm shadow-sm"
+        ? "border-gray-200/80 dark:border-gray-700/80 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl shadow-lg" 
+        : "border-gray-200/50 dark:border-gray-700/50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm shadow-sm"
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
@@ -136,10 +137,13 @@ export default function AppHeader({
 
           {/* Usuario y menú mobile */}
           <div className="flex items-center gap-2">
+            {/* Theme Toggle */}
+            <ThemeToggle />
+            
             {/* Usuario */}
             {isAuthenticated ? (
               <div className="hidden sm:flex items-center gap-3">
-                <span className="text-gray-700 text-sm">
+                <span className="text-gray-700 dark:text-gray-300 text-sm">
                   Bienvenido, {user?.email}
                 </span>
                 <Button

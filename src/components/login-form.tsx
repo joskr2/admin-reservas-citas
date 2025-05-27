@@ -70,7 +70,7 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="overflow-hidden p-0 shadow-2xl border-0 bg-white/95 backdrop-blur-md max-w-5xl mx-auto">
+      <Card className="overflow-hidden p-0 shadow-2xl border-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md max-w-5xl mx-auto">
         <CardContent className="grid p-0 md:grid-cols-2">
           {/* Formulario lado izquierdo */}
           <div className="p-8 md:p-12 flex flex-col justify-center">
@@ -88,7 +88,7 @@ export function LoginForm({
               <CardTitle className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 ¡Bienvenid@!
               </CardTitle>
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-600 dark:text-gray-400 text-lg">
                 Ingresa con tus credenciales para acceder
               </p>
             </div>
@@ -100,7 +100,7 @@ export function LoginForm({
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-base font-medium text-gray-700 flex items-center gap-2">
+                      <FormLabel className="text-base font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
                         <Mail className="w-4 h-4 text-blue-600" />
                         Correo Electrónico
                       </FormLabel>
@@ -109,7 +109,7 @@ export function LoginForm({
                           {...field}
                           type="email"
                           placeholder="tu@correo.com"
-                          className="h-12 text-base border-gray-200 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                          className="h-12 text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 rounded-lg placeholder:text-gray-500 dark:placeholder:text-gray-400"
                           disabled={isLoading}
                         />
                       </FormControl>
@@ -123,7 +123,7 @@ export function LoginForm({
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-base font-medium text-gray-700 flex items-center gap-2">
+                      <FormLabel className="text-base font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
                         <Lock className="w-4 h-4 text-purple-600" />
                         Contraseña
                       </FormLabel>
@@ -132,11 +132,11 @@ export function LoginForm({
                           {...field}
                           type="password"
                           placeholder="••••••••"
-                          className="h-12 text-base border-gray-200 focus:border-purple-500 focus:ring-purple-500 rounded-lg"
+                          className="h-12 text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-600 focus:border-purple-500 focus:ring-purple-500 rounded-lg placeholder:text-gray-500 dark:placeholder:text-gray-400"
                           disabled={isLoading}
                         />
                       </FormControl>
-                      <FormDescription className="text-gray-500">
+                      <FormDescription className="text-gray-500 dark:text-gray-400">
                         Mínimo 6 caracteres
                       </FormDescription>
                       <FormMessage />
@@ -166,7 +166,7 @@ export function LoginForm({
           </div>
 
           {/* Imagen lado derecho */}
-          <div className="relative hidden md:block bg-gradient-to-br from-blue-50 to-purple-50">
+          <div className="relative hidden md:block bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700">
             <Image
               src="/loginimage.webp"
               alt="Acceso a la plataforma"
