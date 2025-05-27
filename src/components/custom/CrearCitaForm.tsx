@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { format } from "date-fns";
+import { format, addHours } from "date-fns";
 import { es } from "date-fns/locale";
 import {
   Form,
@@ -42,6 +42,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  ClockIcon,
   CalendarIcon as LucideCalendarIcon,
   UserIcon,
   BuildingIcon,
@@ -64,10 +65,7 @@ const appointmentFormSchema = z.object({
     invalid_type_error: "Eso no es una fecha válida.",
   }),
   startTime: z.string().min(1, {
-    message: "Por favor selecciona la hora de inicio.",
-  }),
-  endTime: z.string().min(1, {
-    message: "Por favor selecciona la hora de finalización.",
+    message: "Por favor selecciona una hora de inicio.",
   }),
   room: z.string().min(1, {
     message: "Por favor selecciona una habitación.",
@@ -135,11 +133,28 @@ const AVAILABLE_ROOMS = [
   { value: "room-e", label: "Sala E" },
 ];
 
+// Define available time slots
+const TIME_SLOTS = [
+  "09:00",
+  "10:00",
+  "11:00",
+  "12:00",
+  "13:00",
+  "14:00",
+  "15:00",
+  "16:00",
+  "17:00",
+];
+
 export default function CreateAppointmentForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentPsychologist, setCurrentPsychologist] =
     useState<AppointmentUser | null>(null);
+  const [isDateTimePopoverOpen, setIsDateTimePopoverOpen] = useState(false);
+  const [selectedDateInPopover, setSelectedDateInPopover] = useState<
+    Date | undefined
+  >(undefined);
 
   // Get selected psychologist from localStorage
   const getSelectedPsychologist = (): AppointmentUser => {
@@ -162,24 +177,27 @@ export default function CreateAppointmentForm() {
       clientName: "",
       clientEmail: "",
       startTime: "",
-      endTime: "",
       room: "",
     },
   });
+
+  // Watch for changes in appointmentDate or startTime to update the popover display
+  const watchedAppointmentDate = form.watch("appointmentDate");
+  const watchedStartTime = form.watch("startTime");
 
   // Form submission handler
   async function onSubmit(values: AppointmentFormValues) {
     setIsSubmitting(true);
 
     try {
-      // Validate that end time is after start time
-      if (values.endTime <= values.startTime) {
-        toast.error("La hora de fin debe ser posterior a la hora de inicio.");
-        setIsSubmitting(false);
-        return;
-      }
+      // Hora de fin se calcula sumando 1 hora a la hora de inicio
+      // Parse startTime string "HH:mm" and combine with appointmentDate
+      const startDateObject = new Date(values.appointmentDate); // Create a new Date object to avoid mutating the original form value
+      const [hours, minutes] = values.startTime.split(":").map(Number);
+      startDateObject.setHours(hours, minutes, 0, 0); // Set time on the date object
 
-      // Prepare data to send to the API
+      const endDateObject = addHours(startDateObject, 1);
+
       const selectedRoomObject = AVAILABLE_ROOMS.find(
         (r) => r.value === values.room
       );
@@ -196,7 +214,7 @@ export default function CreateAppointmentForm() {
         },
         fecha: format(values.appointmentDate, "yyyy-MM-dd"),
         hora_inicio: values.startTime,
-        hora_fin: values.endTime,
+        hora_fin: format(endDateObject, "HH:mm"),
         habitacion: selectedRoomObject?.label || values.room,
       };
 
@@ -277,8 +295,14 @@ export default function CreateAppointmentForm() {
             </div>
 
             {/* Appointment Form */}
-            <div className="lg:col-span-2">
-              <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+            <div
+              className={`lg:col-span-2 transition-all duration-300 ${
+                isDateTimePopoverOpen ? "blur-sm pointer-events-none" : ""
+              }`}
+            >
+              <Card
+                className={`shadow-lg border-0 bg-white/80 backdrop-blur-sm`}
+              >
                 <CardHeader>
                   <CardTitle className="text-2xl flex items-center gap-2">
                     <LucideCalendarIcon className="w-6 h-6 text-blue-600" />
@@ -347,111 +371,146 @@ export default function CreateAppointmentForm() {
                         </div>
                       </div>
 
-                      {/* Appointment Details */}
+                      {/* Combined Date and Time Picker Section */}
                       <div className="space-y-6">
                         <div className="flex items-center gap-2 mb-4">
                           <LucideCalendarIcon className="w-5 h-5 text-gray-600" />
                           <h3 className="text-lg font-semibold text-gray-900">
-                            Agendar cita
+                            Fecha y Hora de la Cita
                           </h3>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                          <FormField
-                            control={form.control}
-                            name="appointmentDate"
-                            render={({ field }) => (
-                              <FormItem className="flex flex-col">
-                                <FormLabel className="text-sm font-medium text-gray-700">
-                                  Fecha de la cita
-                                </FormLabel>
-                                <Popover>
-                                  <PopoverTrigger asChild>
-                                    <FormControl>
-                                      <Button
-                                        variant={"outline"}
-                                        className={cn(
-                                          "w-full h-12 pl-3 text-left font-normal border-gray-200 focus:border-blue-500 focus:ring-blue-500",
-                                          !field.value &&
-                                            "text-muted-foreground"
-                                        )}
-                                      >
-                                        {field.value ? (
-                                          format(field.value, "PPP", {
-                                            locale: es,
-                                          })
-                                        ) : (
-                                          <span>Selecciona una fecha</span>
-                                        )}
-                                        <LucideCalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                      </Button>
-                                    </FormControl>
-                                  </PopoverTrigger>
-                                  <PopoverContent
-                                    className="w-auto p-0"
-                                    align="start"
-                                  >
-                                    <Calendar
-                                      mode="single"
-                                      selected={field.value}
-                                      onSelect={field.onChange}
-                                      disabled={(date) =>
-                                        date <
-                                        new Date(
-                                          new Date().setDate(
-                                            new Date().getDate() - 1
-                                          )
+                        <FormField
+                          control={form.control}
+                          name="appointmentDate"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                              <FormLabel className="text-sm font-medium text-gray-700">
+                                Fecha y Hora Seleccionada
+                              </FormLabel>
+                              <Popover
+                                open={isDateTimePopoverOpen}
+                                onOpenChange={setIsDateTimePopoverOpen}
+                              >
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      variant={"outline"}
+                                      className={cn(
+                                        "w-full h-12 pl-3 text-left font-normal border-gray-200 focus:border-blue-500 focus:ring-blue-500",
+                                        !watchedAppointmentDate &&
+                                          "text-muted-foreground",
+                                        isDateTimePopoverOpen
+                                          ? "ring-2 ring-blue-500 ring-offset-2"
+                                          : ""
+                                      )}
+                                      disabled={isSubmitting}
+                                    >
+                                      {watchedAppointmentDate &&
+                                      watchedStartTime ? (
+                                        <span className="flex items-center">
+                                          <LucideCalendarIcon className="mr-2 h-4 w-4 opacity-70" />
+                                          {format(
+                                            watchedAppointmentDate,
+                                            "PPP",
+                                            { locale: es }
+                                          )}
+                                          <ClockIcon className="ml-3 mr-2 h-4 w-4 opacity-70" />
+                                          {watchedStartTime}
+                                        </span>
+                                      ) : (
+                                        <span>Selecciona fecha y hora</span>
+                                      )}
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                  className="w-auto p-0 z-50"
+                                  align="start"
+                                >
+                                  <Calendar
+                                    mode="single"
+                                    selected={
+                                      selectedDateInPopover ?? field.value
+                                    }
+                                    onSelect={(date) => {
+                                      setSelectedDateInPopover(date);
+                                    }}
+                                    disabled={(date) =>
+                                      date <
+                                      new Date(
+                                        new Date().setDate(
+                                          new Date().getDate() - 1
                                         )
-                                      }
-                                      initialFocus
-                                    />
-                                  </PopoverContent>
-                                </Popover>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={form.control}
-                            name="startTime"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700">
-                                  Start Time
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    type="time"
-                                    className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                                    {...field}
+                                      )
+                                    }
+                                    initialFocus
                                   />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={form.control}
-                            name="endTime"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700">
-                                  End Time
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    type="time"
-                                    className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                                  {selectedDateInPopover && (
+                                    <div className="p-4 border-t">
+                                      <p className="text-sm font-medium mb-3 text-center">
+                                        Horas disponibles para{" "}
+                                        <span className="font-semibold">
+                                          {format(
+                                            selectedDateInPopover,
+                                            "PPP",
+                                            { locale: es }
+                                          )}
+                                        </span>
+                                        :
+                                      </p>
+                                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                        {TIME_SLOTS.map((time) => (
+                                          <Button
+                                            key={time}
+                                            variant={
+                                              form.getValues("startTime") ===
+                                                time &&
+                                              form
+                                                .getValues("appointmentDate")
+                                                ?.toDateString() ===
+                                                selectedDateInPopover.toDateString()
+                                                ? "default"
+                                                : "outline"
+                                            }
+                                            size="sm"
+                                            className="text-xs sm:text-sm"
+                                            onClick={() => {
+                                              if (selectedDateInPopover) {
+                                                form.setValue(
+                                                  "appointmentDate",
+                                                  selectedDateInPopover,
+                                                  { shouldValidate: true }
+                                                );
+                                                form.setValue(
+                                                  "startTime",
+                                                  time,
+                                                  { shouldValidate: true }
+                                                );
+                                                setSelectedDateInPopover(
+                                                  undefined
+                                                );
+                                                setIsDateTimePopoverOpen(false);
+                                              }
+                                            }}
+                                          >
+                                            {time}
+                                          </Button>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </PopoverContent>
+                              </Popover>
+                              <FormMessage />
+                              {form.formState.errors.startTime && (
+                                <p className="text-sm font-medium text-destructive">
+                                  {form.formState.errors.startTime.message}
+                                </p>
+                              )}
+                            </FormItem>
+                          )}
+                        />
                       </div>
 
                       {/* Location */}
@@ -459,7 +518,7 @@ export default function CreateAppointmentForm() {
                         <div className="flex items-center gap-2 mb-4">
                           <BuildingIcon className="w-5 h-5 text-gray-600" />
                           <h3 className="text-lg font-semibold text-gray-900">
-                            Location
+                            Sala
                           </h3>
                         </div>
 
@@ -469,7 +528,7 @@ export default function CreateAppointmentForm() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-sm font-medium text-gray-700">
-                                Room
+                                Selecciona una sala disponible
                               </FormLabel>
                               <Select
                                 onValueChange={field.onChange}
@@ -477,7 +536,7 @@ export default function CreateAppointmentForm() {
                               >
                                 <FormControl>
                                   <SelectTrigger className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500">
-                                    <SelectValue placeholder="Selecciona una habitación" />
+                                    <SelectValue placeholder="Selecciona una sala" />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -492,10 +551,7 @@ export default function CreateAppointmentForm() {
                                   ))}
                                 </SelectContent>
                               </Select>
-                              <FormDescription className="text-gray-600">
-                                Selecciona la habitación donde se realizará la
-                                consulta
-                              </FormDescription>
+
                               <FormMessage />
                             </FormItem>
                           )}

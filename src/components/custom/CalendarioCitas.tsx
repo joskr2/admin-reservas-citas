@@ -223,9 +223,6 @@ export default function CalendarioCitas() {
             <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2">
               Calendario de Citas
             </h1>
-            <p className="text-gray-600 text-sm sm:text-base">
-              Gestiona tu agenda de manera visual y eficiente
-            </p>
           </div>
           {esPsicologo && (
             <Button
