@@ -59,7 +59,7 @@ export function LoginForm({
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       login(values.email);
-      toast.success(`¡Bienvenido! Has iniciado sesión correctamente.`);
+      toast.success("¡Bienvenido/a! Has iniciado sesión correctamente.");
       router.push("/");
     } catch (error) {
       toast.error("Error al iniciar sesión. Por favor, intenta de nuevo.");

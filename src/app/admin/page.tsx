@@ -52,7 +52,7 @@ export default function AdminPage() {
             </div>
             <div>
               <h2 className="text-xl font-medium">
-                Bienvenido, {currentProfile.nombre}
+                Bienvenido/a
               </h2>
               <p className="text-muted-foreground">
                 {currentProfile.especialidad} • {currentProfile.correo}

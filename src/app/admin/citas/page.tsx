@@ -251,13 +251,13 @@ export default function CitasPage() {
 
 		return (
 			<div className="space-y-6">
-				<Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+				<Card className="shadow-xl border-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
 					<CardHeader>
-						<CardTitle className="flex items-center gap-2 text-xl">
+						<CardTitle className="flex items-center gap-2 text-xl text-gray-900 dark:text-gray-100">
 							<CalendarCheck className="w-6 h-6 text-blue-600" />
 							Citas de Hoy
 						</CardTitle>
-						<CardDescription>
+						<CardDescription className="text-gray-600 dark:text-gray-400">
 							{citasHoy.length} citas programadas para{" "}
 							{fechaActual.toLocaleDateString("es-ES", {
 								weekday: "long",
@@ -269,11 +269,11 @@ export default function CitasPage() {
 					<CardContent>
 						{citasHoy.length === 0 ? (
 							<div className="text-center py-12">
-								<Calendar className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-								<h3 className="text-lg font-medium text-gray-900 mb-2">
+								<Calendar className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+								<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
 									No hay citas programadas
 								</h3>
-								<p className="text-gray-600 mb-4">
+								<p className="text-gray-600 dark:text-gray-400 mb-4">
 									No tienes citas programadas para hoy
 								</p>
 								<Button
@@ -290,27 +290,27 @@ export default function CitasPage() {
 									// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 <div
 										key={cita.id}
-										className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200 cursor-pointer hover:shadow-md transition-all duration-200 transform hover:scale-105"
+										className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 rounded-xl border border-blue-200 dark:border-blue-800 cursor-pointer hover:shadow-md transition-all duration-200 transform hover:scale-105"
 										onClick={() => handleCitaClick(cita)}
 									>
 										<div className="flex items-center gap-4">
-											<div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-												<User className="w-6 h-6 text-blue-600" />
+											<div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center">
+												<User className="w-6 h-6 text-blue-600 dark:text-blue-400" />
 											</div>
 											<div>
-												<h3 className="font-semibold text-gray-900 text-lg">
+												<h3 className="font-semibold text-gray-900 dark:text-gray-100 text-lg">
 													{cita.cliente.nombre}
 												</h3>
-												<p className="text-sm text-gray-600">
+												<p className="text-sm text-gray-600 dark:text-gray-400">
 													{cita.cliente.correo}
 												</p>
-												<p className="text-sm text-gray-500">
+												<p className="text-sm text-gray-500 dark:text-gray-500">
 													Habitación {cita.habitacion.numero}
 												</p>
 											</div>
 										</div>
 										<div className="text-left sm:text-right mt-4 sm:mt-0">
-											<div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+											<div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
 												<Clock className="w-4 h-4" />
 												<span className="font-medium">
 													{cita.hora_inicio} - {cita.hora_fin}
@@ -346,9 +346,9 @@ export default function CitasPage() {
 		const diasSemana = obtenerDiasDeLaSemana();
 
 		return (
-			<Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+			<Card className="shadow-xl border-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
 				<CardHeader>
-					<CardTitle className="flex items-center gap-2">
+					<CardTitle className="flex items-center gap-2 text-gray-900 dark:text-gray-100">
 						<CalendarRange className="w-6 h-6 text-purple-600" />
 						Vista Semanal
 					</CardTitle>
@@ -365,18 +365,18 @@ export default function CitasPage() {
 									key={index}
 									className={`p-4 rounded-lg border transition-all duration-200 ${
 										esHoyDia
-											? "bg-blue-50 border-blue-300 shadow-md"
-											: "bg-white border-gray-200 hover:bg-gray-50"
+											? "bg-blue-50 dark:bg-blue-950/50 border-blue-300 dark:border-blue-700 shadow-md"
+											: "bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
 									}`}
 								>
 									<div
-										className={`text-center mb-3 ${esHoyDia ? "text-blue-600" : "text-gray-900"}`}
+										className={`text-center mb-3 ${esHoyDia ? "text-blue-600" : "text-gray-900 dark:text-gray-100"}`}
 									>
 										<p className="text-xs font-medium uppercase tracking-wide">
 											{["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"][index]}
 										</p>
 										<p
-											className={`text-lg font-bold ${esHoyDia ? "text-blue-600" : "text-gray-900"}`}
+											className={`text-lg font-bold ${esHoyDia ? "text-blue-600" : "text-gray-900 dark:text-gray-100"}`}
 										>
 											{dia.getDate()}
 										</p>
@@ -395,7 +395,7 @@ export default function CitasPage() {
 											</div>
 										))}
 										{citasDelDia.length > 3 && (
-											<div className="text-xs text-gray-600 text-center py-1">
+											<div className="text-xs text-gray-600 dark:text-gray-400 text-center py-1">
 												+{citasDelDia.length - 3} más
 											</div>
 										)}
@@ -411,9 +411,9 @@ export default function CitasPage() {
 
 	const renderVistaMes = () => {
 		return (
-			<Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+			<Card className="shadow-xl border-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
 				<CardHeader>
-					<CardTitle className="flex items-center gap-2">
+					<CardTitle className="flex items-center gap-2 text-gray-900 dark:text-gray-100">
 						<CalendarDays className="w-6 h-6 text-green-600" />
 						Vista Mensual
 					</CardTitle>
@@ -424,7 +424,7 @@ export default function CitasPage() {
 						{["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((dia) => (
 							<div
 								key={dia}
-								className="p-2 sm:p-3 text-center font-semibold text-gray-600 bg-gray-50 rounded-lg text-xs sm:text-sm"
+								className="p-2 sm:p-3 text-center font-semibold text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 rounded-lg text-xs sm:text-sm"
 							>
 								<span className="hidden sm:inline">{dia}</span>
 								<span className="sm:hidden">{dia.slice(0, 1)}</span>
@@ -446,9 +446,9 @@ export default function CitasPage() {
 									className={`min-h-[80px] sm:min-h-[120px] p-1 sm:p-2 border rounded-lg transition-all duration-200 hover:shadow-md ${
 										esDelMesActual
 											? esEsteHoy
-												? "bg-blue-50 border-blue-300 shadow-md"
-												: "bg-white border-gray-200 hover:bg-gray-50"
-											: "bg-gray-50 border-gray-100 text-gray-400"
+												? "bg-blue-50 dark:bg-blue-950/50 border-blue-300 dark:border-blue-700 shadow-md"
+												: "bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
+											: "bg-gray-50 dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-gray-400 dark:text-gray-500"
 									}`}
 								>
 									<div
@@ -456,8 +456,8 @@ export default function CitasPage() {
 											esEsteHoy
 												? "text-blue-600"
 												: esDelMesActual
-													? "text-gray-900"
-													: "text-gray-400"
+													? "text-gray-900 dark:text-gray-100"
+													: "text-gray-400 dark:text-gray-500"
 										}`}
 									>
 										{fecha.getDate()}
@@ -485,7 +485,7 @@ export default function CitasPage() {
 												</div>
 											))}
 											{citasDelDia.length > 2 && (
-												<div className="text-[10px] sm:text-xs text-gray-600 text-center py-1">
+												<div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 text-center py-1">
 													+{citasDelDia.length - 2} más
 												</div>
 											)}
@@ -501,13 +501,13 @@ export default function CitasPage() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
+		<div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col">
 			<main className="flex-1 p-3 sm:p-6">
 				<div className="max-w-7xl mx-auto space-y-6">
 					{/* Controles superiores */}
 					<div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
 						{/* Selector de vista */}
-						<div className="flex items-center gap-2 p-1 bg-white rounded-lg shadow-sm border border-gray-200">
+						<div className="flex items-center gap-2 p-1 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
 							{(
 								[
 									{ key: "hoy", label: "Hoy", icon: CalendarCheck },
@@ -524,7 +524,7 @@ export default function CitasPage() {
 										"flex items-center gap-2 px-3 py-2",
 										vistaActual === key
 											? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md"
-											: "text-gray-600 hover:text-blue-600 hover:bg-blue-50",
+											: "text-gray-600 dark:text-gray-300 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50",
 									)}
 								>
 									<Icon className="w-4 h-4" />
@@ -536,18 +536,18 @@ export default function CitasPage() {
 						{/* Navegación y botón nueva cita */}
 						<div className="flex items-center gap-4 w-full lg:w-auto">
 							{/* Navegación */}
-							<div className="flex items-center gap-2 bg-white rounded-lg shadow-sm border border-gray-200 p-1">
+							<div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 p-1">
 								<Button
 									variant="ghost"
 									size="sm"
 									onClick={() => navegarPeriodo("anterior")}
-									className="p-2 hover:bg-blue-50"
+									className="p-2 hover:bg-blue-50 dark:hover:bg-blue-950/50"
 								>
 									<ChevronLeft className="h-4 w-4" />
 								</Button>
 
 								<div className="px-3 py-1 min-w-[200px] text-center">
-									<h2 className="font-semibold text-gray-900 text-sm sm:text-base">
+									<h2 className="font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base">
 										{formatearTituloPeriodo()}
 									</h2>
 								</div>
@@ -556,7 +556,7 @@ export default function CitasPage() {
 									variant="ghost"
 									size="sm"
 									onClick={() => navegarPeriodo("siguiente")}
-									className="p-2 hover:bg-blue-50"
+									className="p-2 hover:bg-blue-50 dark:hover:bg-blue-950/50"
 								>
 									<ChevronRight className="h-4 w-4" />
 								</Button>
