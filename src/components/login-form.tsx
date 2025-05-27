@@ -7,16 +7,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter();
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push("/admin/profiles");
+    if (email.trim()) {
+      login(email);
+      router.push("/");
+    }
   };
 
   return (
@@ -38,6 +45,8 @@ export function LoginForm({
                   type="email"
                   placeholder="mail@dominio.com"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="h-12 text-base"
                 />
               </div>

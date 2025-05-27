@@ -3,6 +3,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import AppHeader from "@/components/layout/AppHeader";
 import AppFooter from "@/components/layout/AppFooter";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -27,10 +28,12 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
-				<AppHeader />
-				{children}
-				<Toaster />
-				<AppFooter />
+				<AuthProvider>
+					<AppHeader />
+					{children}
+					<Toaster />
+					<AppFooter />
+				</AuthProvider>
 			</body>
 		</html>
 	);

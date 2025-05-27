@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface AppHeaderProps {
   showBackButton?: boolean;
@@ -29,6 +30,7 @@ export default function AppHeader({
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -107,41 +109,58 @@ export default function AppHeader({
           </div>
 
           {/* Navegación desktop */}
-          <nav className="hidden md:flex items-center gap-2">
-            {navigationItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link key={item.href} href={item.href}>
-                  <Button
-                    variant={"ghost"}
-                    size="sm"
-                    className={cn(
-                      "flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200",
-                      item.active
-                        ? "text-blue-600 bg-blue-50"
-                        : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
-                    )}
-                  >
-                    <Icon className="w-fit h-4" />
-                    {item.label}
-                  </Button>
-                </Link>
-              );
-            })}
-          </nav>
+          {isAuthenticated && (
+            <nav className="hidden md:flex items-center gap-2">
+              {navigationItems.slice(1).map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link key={item.href} href={item.href}>
+                    <Button
+                      variant={"ghost"}
+                      size="sm"
+                      className={cn(
+                        "flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200",
+                        item.active
+                          ? "text-blue-600 bg-blue-50"
+                          : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                      )}
+                    >
+                      <Icon className="w-fit h-4" />
+                      {item.label}
+                    </Button>
+                  </Link>
+                );
+              })}
+            </nav>
+          )}
 
           {/* Usuario y menú mobile */}
           <div className="flex items-center gap-2">
             {/* Usuario */}
-            <Link href="/login">
-              <Button
-                size="sm"
-                className=" hidden sm:inline-flex  h-10 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
-              >
-                <LogInIcon className="w-fit h-6 mr-3" />
-                Inicio de sesión
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <div className="hidden sm:flex items-center gap-3">
+                <span className="text-gray-700 text-sm">
+                  Bienvenido, {user?.email}
+                </span>
+                <Button
+                  size="sm"
+                  onClick={logout}
+                  className="h-10 px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
+                >
+                  Salir
+                </Button>
+              </div>
+            ) : (
+              <Link href="/login">
+                <Button
+                  size="sm"
+                  className="hidden sm:inline-flex h-10 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
+                >
+                  <LogInIcon className="w-fit h-6 mr-3" />
+                  Inicio de sesión
+                </Button>
+              </Link>
+            )}
 
             {/* Menú hamburguesa para mobile */}
             <Button
@@ -158,43 +177,64 @@ export default function AppHeader({
         {/* Menú móvil */}
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200">
-            <nav className="flex flex-col gap-2">
-              {navigationItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <Button
-                      variant={item.active ? "secondary" : "ghost"}
-                      size="sm"
-                      className={cn(
-                        "w-full justify-start gap-3 px-4 py-3",
-                        item.active
-                          ? "bg-blue-100 text-blue-700"
-                          : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
-                      )}
+            {isAuthenticated && (
+              <nav className="flex flex-col gap-2 mb-4">
+                {navigationItems.slice(1).map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setIsMenuOpen(false)}
                     >
-                      <Icon className="w-5 h-5" />
-                      {item.label}
-                    </Button>
-                  </Link>
-                );
-              })}
-            </nav>
+                      <Button
+                        variant={item.active ? "secondary" : "ghost"}
+                        size="sm"
+                        className={cn(
+                          "w-full justify-start gap-3 px-4 py-3",
+                          item.active
+                            ? "bg-blue-100 text-blue-700"
+                            : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                        )}
+                      >
+                        <Icon className="w-5 h-5" />
+                        {item.label}
+                      </Button>
+                    </Link>
+                  );
+                })}
+              </nav>
+            )}
 
             {/* Usuario en mobile */}
-            <Link href="/login">
-              <Button
-                size="sm"
-                className="mt-4 h-10 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
-              >
-                <LogInIcon className="w-fit h-6 mr-3" />
-                Inicio de sesión
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <div className="space-y-3">
+                <p className="text-gray-700 text-sm px-4">
+                  Bienvenido, {user?.email}
+                </p>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    logout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="w-full h-10 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300"
+                >
+                  Salir
+                </Button>
+              </div>
+            ) : (
+              <Link href="/login">
+                <Button
+                  size="sm"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full h-10 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300"
+                >
+                  <LogInIcon className="w-fit h-6 mr-3" />
+                  Inicio de sesión
+                </Button>
+              </Link>
+            )}
           </div>
         )}
       </div>

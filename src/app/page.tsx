@@ -16,9 +16,12 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
+import Image from "next/image";
 
 export default function HomePage() {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
 
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
@@ -89,35 +92,60 @@ export default function HomePage() {
                 </span>
               </motion.p>
 
-              <motion.div
-                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-                variants={fadeInUp}
-              >
-                <Button
-                  size="lg"
-                  className="hidden sm:inline-flex h-16 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
-                  onClick={() => router.push("/admin/citas/nueva")}
+              {isAuthenticated ? (
+                <motion.div
+                  className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                  variants={fadeInUp}
                 >
-                  <CalendarIcon className="w-6 h-6 mr-3" />
-                  Programar Nueva Cita
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="h-16 px-8 border-2 border-gradient-to-r from-blue-600 to-purple-600 bg-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 text-purple-600 hover:text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
-                  onClick={() => router.push("/admin/citas")}
+                  <Button
+                    size="lg"
+                    className="h-16 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
+                    onClick={() => router.push("/admin/citas/nueva")}
+                  >
+                    <CalendarIcon className="w-6 h-6 mr-3" />
+                    Programar Nueva Cita
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="h-16 px-8 border-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
+                    onClick={() => router.push("/admin/citas")}
+                  >
+                    Ver Calendario
+                    <ArrowRightIcon className="w-5 h-5 ml-3" />
+                  </Button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  className="flex flex-col items-center gap-6"
+                  variants={fadeInUp}
                 >
-                  Ver Calendario
-                  <ArrowRightIcon className="w-5 h-5 ml-3" />
-                </Button>
-              </motion.div>
+                  <div className="relative w-64 h-64 rounded-2xl overflow-hidden shadow-2xl">
+                    <Image
+                      src="/loginimage.webp"
+                      alt="Inicia sesión para acceder"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <Button
+                    size="lg"
+                    className="h-16 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
+                    onClick={() => router.push("/login")}
+                  >
+                    Iniciar Sesión
+                    <ArrowRightIcon className="w-5 h-5 ml-3" />
+                  </Button>
+                </motion.div>
+              )}
             </motion.div>
 
             {/* Features Grid */}
-            <motion.div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 lg:gap-8"
-              variants={staggerChildren}
-            >
+            {isAuthenticated && (
+              <motion.div
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 lg:gap-8"
+                variants={staggerChildren}
+              >
               {/* Gestión de Citas */}
               <motion.div variants={fadeInUp}>
                 <Card
@@ -170,7 +198,8 @@ export default function HomePage() {
                   </CardContent>
                 </Card>
               </motion.div>
-            </motion.div>
+              </motion.div>
+            )}
           </div>
         </motion.div>
       </main>
