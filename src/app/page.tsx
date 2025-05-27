@@ -117,25 +117,36 @@ export default function HomePage() {
                 </motion.div>
               ) : (
                 <motion.div
-                  className="flex flex-col items-center gap-6"
+                  className="w-[90dvw] mx-auto"
                   variants={fadeInUp}
                 >
-                  <div className="relative w-64 h-64 rounded-2xl overflow-hidden shadow-2xl">
+                  <div className="relative h-96 md:h-[500px] w-full overflow-hidden rounded-2xl shadow-2xl">
                     <Image
                       src="/loginimage.webp"
                       alt="Inicia sesión para acceder"
                       fill
                       className="object-cover"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-900/60 via-purple-900/40 to-blue-900/60" />
+                    
+                    {/* Contenido centrado sobre la imagen */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+                      <h3 className="text-3xl md:text-5xl font-bold text-white mb-6 drop-shadow-lg">
+                        Accede a tu plataforma
+                      </h3>
+                      <p className="text-white/90 text-lg md:text-xl mb-8 max-w-2xl leading-relaxed drop-shadow-md">
+                        Inicia sesión para gestionar tus citas, ver tu calendario y acceder a todas las funcionalidades del sistema.
+                      </p>
+                      <Button
+                        size="lg"
+                        className="h-16 px-8 bg-white hover:bg-gray-100 text-blue-600 hover:text-blue-700 font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105"
+                        onClick={() => router.push("/login")}
+                      >
+                        Iniciar Sesión
+                        <ArrowRightIcon className="w-5 h-5 ml-3" />
+                      </Button>
+                    </div>
                   </div>
-                  <Button
-                    size="lg"
-                    className="h-16 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
-                    onClick={() => router.push("/login")}
-                  >
-                    Iniciar Sesión
-                    <ArrowRightIcon className="w-5 h-5 ml-3" />
-                  </Button>
                 </motion.div>
               )}
             </motion.div>
