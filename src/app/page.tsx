@@ -104,7 +104,7 @@ export default function HomePage() {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="h-16 px-8 border-2 border-gray-300 hover:border-blue-500 text-gray-700 hover:text-blue-600 font-semibold rounded-xl transition-all duration-300 hover:bg-blue-50"
+                  className="h-16 px-8 border-2 border-gradient-to-r from-blue-600 to-purple-600 bg-white hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 text-purple-600 hover:text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
                   onClick={() => router.push("/admin/citas")}
                 >
                   Ver Calendario
