@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin, User } from "lucide-react";
-import { Cita, iniciarCita, terminarCita } from "@/lib/api";
+import  {  type Cita,  iniciarCita, terminarCita } from "@/lib/api";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
