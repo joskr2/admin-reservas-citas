@@ -76,7 +76,6 @@ export default function HomePage() {
                 variants={fadeInUp}
               >
                 Tu plataforma integral para la gestión profesional de{" "}
-                <span className="text-blue-600 font-semibold">citas médicas</span> y{" "}
                 <span className="text-purple-600 font-semibold">consultas psicológicas</span>
               </motion.p>
               
@@ -106,7 +105,7 @@ export default function HomePage() {
 
             {/* Features Grid */}
             <motion.div 
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 lg:gap-8"
               variants={staggerChildren}
             >
               {/* Gestión de Citas */}
@@ -157,66 +156,9 @@ export default function HomePage() {
                 </Card>
               </motion.div>
 
-              {/* Próximamente */}
-              <motion.div variants={fadeInUp}>
-                <Card className="h-full shadow-xl border-0 bg-white/60 backdrop-blur-sm transition-all duration-500 opacity-75">
-                  <CardHeader className="text-center pb-4">
-                    <div className="w-16 h-16 bg-gradient-to-r from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <ClockIcon className="w-8 h-8 text-gray-500" />
-                    </div>
-                    <CardTitle className="text-xl font-bold text-gray-700">Próximamente</CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <CardDescription className="text-gray-500 mb-6 leading-relaxed">
-                      Nuevas funcionalidades están en desarrollo para mejorar tu experiencia.
-                    </CardDescription>
-                    <div className="flex items-center justify-center text-gray-500 font-medium">
-                      En desarrollo
-                      <SparklesIcon className="w-4 h-4 ml-2" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+
             </motion.div>
 
-            {/* Features adicionales */}
-            <motion.div 
-              className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8"
-              variants={staggerChildren}
-            >
-              <motion.div 
-                className="text-center group"
-                variants={fadeInUp}
-              >
-                <div className="w-16 h-16 bg-gradient-to-r from-green-100 to-emerald-200 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <ShieldCheckIcon className="w-8 h-8 text-emerald-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Seguro y Confiable</h3>
-                <p className="text-gray-600">Tus datos están protegidos con los más altos estándares de seguridad.</p>
-              </motion.div>
-              
-              <motion.div 
-                className="text-center group"
-                variants={fadeInUp}
-              >
-                <div className="w-16 h-16 bg-gradient-to-r from-orange-100 to-amber-200 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <ClockIcon className="w-8 h-8 text-amber-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Ahorra Tiempo</h3>
-                <p className="text-gray-600">Gestiona tu agenda de manera eficiente y automatizada.</p>
-              </motion.div>
-              
-              <motion.div 
-                className="text-center group"
-                variants={fadeInUp}
-              >
-                <div className="w-16 h-16 bg-gradient-to-r from-rose-100 to-pink-200 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <HeartHandshakeIcon className="w-8 h-8 text-rose-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Centrado en el Paciente</h3>
-                <p className="text-gray-600">Diseñado para mejorar la experiencia de atención al paciente.</p>
-              </motion.div>
-            </motion.div>
           </div>
         </motion.div>
       </main>

@@ -22,8 +22,7 @@ export default function AppFooter() {
               </div>
             </Link>
             <p className="text-gray-300 text-sm leading-relaxed">
-              Plataforma integral para la gestión profesional de citas médicas y consultas psicológicas. 
-              Facilitamos la conexión entre profesionales y pacientes.
+              Plataforma integral para la gestión profesional de consultas psicológicas. 
             </p>
           </div>
 
