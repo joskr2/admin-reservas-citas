@@ -10,7 +10,6 @@ import { es } from "date-fns/locale";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -144,6 +143,9 @@ const TIME_SLOTS = [
   "15:00",
   "16:00",
   "17:00",
+  "18:00",
+  "19:00",
+  "20:00"
 ];
 
 export default function CreateAppointmentForm() {
@@ -551,7 +553,6 @@ export default function CreateAppointmentForm() {
                                   ))}
                                 </SelectContent>
                               </Select>
-
                               <FormMessage />
                             </FormItem>
                           )}
