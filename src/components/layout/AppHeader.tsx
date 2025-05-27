@@ -98,11 +98,13 @@ export default function AppHeader({
               return (
                 <Link key={item.href} href={item.href}>
                   <Button
-                    variant={ "ghost"}
+                    variant={"ghost"}
                     size="sm"
                     className={cn(
                       "flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200",
-                      "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                      item.active
+                        ? "text-blue-600 bg-blue-50"
+                        : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
                     )}
                   >
                     <Icon className="w-fit h-4" />
@@ -119,7 +121,7 @@ export default function AppHeader({
             <Button
               size="sm"
               className=" hidden sm:inline-flex  h-10 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
-              onClick={() => router.push("/admin/citas/nueva")}
+              onClick={() => router.push("/login")}
             >
               <LogInIcon className="w-fit h-6 mr-3" />
               Inicio de sesión
@@ -150,11 +152,13 @@ export default function AppHeader({
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Button
-                      variant={"ghost"}
+                      variant={item.active ? "secondary" : "ghost"}
                       size="sm"
                       className={cn(
-                        "w-full justify-start gap-3 px-4 py-3  hover:from-blue-700 hover:to-purple-700",
-                        "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                        "w-full justify-start gap-3 px-4 py-3",
+                        item.active
+                          ? "bg-blue-100 text-blue-700"
+                          : "text-gray-600 hover:text-blue-600 hover:bg-blue-50"
                       )}
                     >
                       <Icon className="w-5 h-5" />
@@ -168,8 +172,11 @@ export default function AppHeader({
             {/* Usuario en mobile */}
             <Button
               size="sm"
-              className="h-10 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
-              onClick={() => router.push("/admin/citas/nueva")}
+              className="mt-4 h-10 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
+              onClick={() => {
+                router.push("/login");
+                setIsMenuOpen(false);
+              }}
             >
               <LogInIcon className="w-fit h-6 mr-3" />
               Inicio de sesión

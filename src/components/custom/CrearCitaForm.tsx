@@ -14,6 +14,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -47,8 +48,6 @@ import {
   BuildingIcon,
 } from "lucide-react";
 import { Loading } from "@/components/ui/loading";
-import AppHeader from "@/components/layout/AppHeader";
-import AppFooter from "@/components/layout/AppFooter";
 import type { AppointmentUser } from "@/types/cita";
 
 // Validation schema for the form
@@ -145,7 +144,7 @@ const TIME_SLOTS = [
   "17:00",
   "18:00",
   "19:00",
-  "20:00"
+  "20:00",
 ];
 
 export default function CreateAppointmentForm() {
@@ -253,338 +252,322 @@ export default function CreateAppointmentForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
-      <AppHeader
-        showBackButton={true}
-        title="Nueva cita"
-        subtitle="Agendar una nueva cita"
-      />
-      <main className="flex-1 py-8 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              Nueva Cita
-            </h1>
-            <p className="text-gray-600">Agendar una nueva cita</p>
+    <>
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Nueva Cita</h1>
+          <p className="text-gray-600">Agendar una nueva cita</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Psychologist Information */}
+          <div className="lg:col-span-1">
+            <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+              <CardHeader className="text-center pb-2">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <UserIcon className="w-8 h-8 text-blue-600" />
+                </div>
+                <CardTitle className="text-xl">Psicólogo/a Asignado</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <h3 className="font-semibold text-lg text-gray-900 mb-1">
+                  {currentPsychologist?.name || "Cargando..."}
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  {currentPsychologist?.email || "Cargando..."}
+                </p>
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <p className="text-green-800 text-sm font-medium">
+                    ✓ Disponible
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Psychologist Information */}
-            <div className="lg:col-span-1">
-              <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-                <CardHeader className="text-center pb-2">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <UserIcon className="w-8 h-8 text-blue-600" />
-                  </div>
-                  <CardTitle className="text-xl">
-                    Psicólogo/a Asignado
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="text-center">
-                  <h3 className="font-semibold text-lg text-gray-900 mb-1">
-                    {currentPsychologist?.name || "Cargando..."}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-4">
-                    {currentPsychologist?.email || "Cargando..."}
-                  </p>
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <p className="text-green-800 text-sm font-medium">
-                      ✓ Disponible
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Appointment Form */}
-            <div
-              className={`lg:col-span-2 transition-all duration-300 ${
-                isDateTimePopoverOpen ? "blur-sm pointer-events-none" : ""
-              }`}
-            >
-              <Card
-                className={`shadow-lg border-0 bg-white/80 backdrop-blur-sm`}
-              >
-                <CardHeader>
-                  <CardTitle className="text-2xl flex items-center gap-2">
-                    <LucideCalendarIcon className="w-6 h-6 text-blue-600" />
-                    Detalles de la Cita
-                  </CardTitle>
-                  <CardDescription>
-                    Complete la información necesaria para agendar su consulta.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Form {...form}>
-                    <form
-                      onSubmit={form.handleSubmit(onSubmit)}
-                      className="space-y-8"
-                    >
-                      {/* Patient Information */}
-                      <div className="space-y-6">
-                        <div className="flex items-center gap-2 mb-4">
-                          <UserIcon className="w-5 h-5 text-gray-600" />
-                          <h3 className="text-lg font-semibold text-gray-900">
-                            Información del Paciente
-                          </h3>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <FormField
-                            control={form.control}
-                            name="clientName"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700">
-                                  Nombres
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder="ingresa los nombres del paciente"
-                                    className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={form.control}
-                            name="clientEmail"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700">
-                                  Correo Electrónico
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    type="email"
-                                    placeholder="correo@email.com"
-                                    className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+          {/* Appointment Form */}
+          <div
+            className={`lg:col-span-2 transition-all duration-300 ${
+              isDateTimePopoverOpen ? "blur-sm pointer-events-none" : ""
+            }`}
+          >
+            <Card className={`shadow-lg border-0 bg-white/80 backdrop-blur-sm`}>
+              <CardHeader>
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <LucideCalendarIcon className="w-6 h-6 text-blue-600" />
+                  Detalles de la Cita
+                </CardTitle>
+                <CardDescription>
+                  Complete la información necesaria para agendar su consulta.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-8"
+                  >
+                    {/* Patient Information */}
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <UserIcon className="w-5 h-5 text-gray-600" />
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          Información del Paciente
+                        </h3>
                       </div>
 
-                      {/* Combined Date and Time Picker Section */}
-                      <div className="space-y-6">
-                        <div className="flex items-center gap-2 mb-4">
-                          <LucideCalendarIcon className="w-5 h-5 text-gray-600" />
-                          <h3 className="text-lg font-semibold text-gray-900">
-                            Fecha y Hora de la Cita
-                          </h3>
-                        </div>
-
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <FormField
                           control={form.control}
-                          name="appointmentDate"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-col">
-                              <FormLabel className="text-sm font-medium text-gray-700">
-                                Fecha y Hora Seleccionada
-                              </FormLabel>
-                              <Popover
-                                open={isDateTimePopoverOpen}
-                                onOpenChange={setIsDateTimePopoverOpen}
-                              >
-                                <PopoverTrigger asChild>
-                                  <FormControl>
-                                    <Button
-                                      variant={"outline"}
-                                      className={cn(
-                                        "w-full h-12 pl-3 text-left font-normal border-gray-200 focus:border-blue-500 focus:ring-blue-500",
-                                        !watchedAppointmentDate &&
-                                          "text-muted-foreground",
-                                        isDateTimePopoverOpen
-                                          ? "ring-2 ring-blue-500 ring-offset-2"
-                                          : ""
-                                      )}
-                                      disabled={isSubmitting}
-                                    >
-                                      {watchedAppointmentDate &&
-                                      watchedStartTime ? (
-                                        <span className="flex items-center">
-                                          <LucideCalendarIcon className="mr-2 h-4 w-4 opacity-70" />
-                                          {format(
-                                            watchedAppointmentDate,
-                                            "PPP",
-                                            { locale: es }
-                                          )}
-                                          <ClockIcon className="ml-3 mr-2 h-4 w-4 opacity-70" />
-                                          {watchedStartTime}
-                                        </span>
-                                      ) : (
-                                        <span>Selecciona fecha y hora</span>
-                                      )}
-                                    </Button>
-                                  </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent
-                                  className="w-auto p-0 z-50"
-                                  align="start"
-                                >
-                                  <Calendar
-                                    mode="single"
-                                    selected={
-                                      selectedDateInPopover ?? field.value
-                                    }
-                                    onSelect={(date) => {
-                                      setSelectedDateInPopover(date);
-                                    }}
-                                    disabled={(date) =>
-                                      date <
-                                      new Date(
-                                        new Date().setDate(
-                                          new Date().getDate() - 1
-                                        )
-                                      )
-                                    }
-                                    initialFocus
-                                  />
-                                  {selectedDateInPopover && (
-                                    <div className="p-4 border-t">
-                                      <p className="text-sm font-medium mb-3 text-center">
-                                        Horas disponibles para{" "}
-                                        <span className="font-semibold">
-                                          {format(
-                                            selectedDateInPopover,
-                                            "PPP",
-                                            { locale: es }
-                                          )}
-                                        </span>
-                                        :
-                                      </p>
-                                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                                        {TIME_SLOTS.map((time) => (
-                                          <Button
-                                            key={time}
-                                            variant={
-                                              form.getValues("startTime") ===
-                                                time &&
-                                              form
-                                                .getValues("appointmentDate")
-                                                ?.toDateString() ===
-                                                selectedDateInPopover.toDateString()
-                                                ? "default"
-                                                : "outline"
-                                            }
-                                            size="sm"
-                                            className="text-xs sm:text-sm"
-                                            onClick={() => {
-                                              if (selectedDateInPopover) {
-                                                form.setValue(
-                                                  "appointmentDate",
-                                                  selectedDateInPopover,
-                                                  { shouldValidate: true }
-                                                );
-                                                form.setValue(
-                                                  "startTime",
-                                                  time,
-                                                  { shouldValidate: true }
-                                                );
-                                                setSelectedDateInPopover(
-                                                  undefined
-                                                );
-                                                setIsDateTimePopoverOpen(false);
-                                              }
-                                            }}
-                                          >
-                                            {time}
-                                          </Button>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
-                                </PopoverContent>
-                              </Popover>
-                              <FormMessage />
-                              {form.formState.errors.startTime && (
-                                <p className="text-sm font-medium text-destructive">
-                                  {form.formState.errors.startTime.message}
-                                </p>
-                              )}
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      {/* Location */}
-                      <div className="space-y-6">
-                        <div className="flex items-center gap-2 mb-4">
-                          <BuildingIcon className="w-5 h-5 text-gray-600" />
-                          <h3 className="text-lg font-semibold text-gray-900">
-                            Sala
-                          </h3>
-                        </div>
-
-                        <FormField
-                          control={form.control}
-                          name="room"
+                          name="clientName"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-sm font-medium text-gray-700">
-                                Selecciona una sala disponible
+                                Nombres
                               </FormLabel>
-                              <Select
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
-                              >
-                                <FormControl>
-                                  <SelectTrigger className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500">
-                                    <SelectValue placeholder="Selecciona una sala" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {AVAILABLE_ROOMS.map((roomItem) => (
-                                    <SelectItem
-                                      key={roomItem.value}
-                                      value={roomItem.value}
-                                      className="cursor-pointer hover:bg-blue-50"
-                                    >
-                                      {roomItem.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                              <FormControl>
+                                <Input
+                                  placeholder="ingresa los nombres del paciente"
+                                  className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="clientEmail"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm font-medium text-gray-700">
+                                Correo Electrónico
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="email"
+                                  placeholder="correo@email.com"
+                                  className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                                  {...field}
+                                />
+                              </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
                       </div>
+                    </div>
 
-                      <div className="pt-6 border-t border-gray-200">
-                        <Button
-                          type="submit"
-                          size="lg"
-                          className="w-full h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105"
-                          disabled={isSubmitting}
-                        >
-                          {isSubmitting ? (
-                            <Loading size="sm" text="Programando cita..." />
-                          ) : (
-                            <div className="flex items-center gap-2">
-                              <LucideCalendarIcon className="w-5 h-5" />
-                              Programar Cita
-                            </div>
-                          )}
-                        </Button>
+                    {/* Combined Date and Time Picker Section */}
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <LucideCalendarIcon className="w-5 h-5 text-gray-600" />
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          Fecha y Hora de la Cita
+                        </h3>
                       </div>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
-            </div>
+
+                      <FormField
+                        control={form.control}
+                        name="appointmentDate"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel className="text-sm font-medium text-gray-700">
+                              Fecha y Hora Seleccionada
+                            </FormLabel>
+                            <Popover
+                              open={isDateTimePopoverOpen}
+                              onOpenChange={setIsDateTimePopoverOpen}
+                            >
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                      "w-full h-12 pl-3 text-left font-normal border-gray-200 focus:border-blue-500 focus:ring-blue-500",
+                                      !watchedAppointmentDate &&
+                                        "text-muted-foreground",
+                                      isDateTimePopoverOpen
+                                        ? "ring-2 ring-blue-500 ring-offset-2"
+                                        : ""
+                                    )}
+                                    disabled={isSubmitting}
+                                  >
+                                    {watchedAppointmentDate &&
+                                    watchedStartTime ? (
+                                      <span className="flex items-center">
+                                        <LucideCalendarIcon className="mr-2 h-4 w-4 opacity-70" />
+                                        {format(watchedAppointmentDate, "PPP", {
+                                          locale: es,
+                                        })}
+                                        <ClockIcon className="ml-3 mr-2 h-4 w-4 opacity-70" />
+                                        {watchedStartTime}
+                                      </span>
+                                    ) : (
+                                      <span>Selecciona fecha y hora</span>
+                                    )}
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                className="w-auto p-0 z-50"
+                                align="start"
+                              >
+                                <Calendar
+                                  mode="single"
+                                  selected={
+                                    selectedDateInPopover ?? field.value
+                                  }
+                                  onSelect={(date) => {
+                                    setSelectedDateInPopover(date);
+                                  }}
+                                  disabled={(date) =>
+                                    date <
+                                    new Date(
+                                      new Date().setDate(
+                                        new Date().getDate() - 1
+                                      )
+                                    )
+                                  }
+                                  initialFocus
+                                />
+                                {selectedDateInPopover && (
+                                  <div className="p-4 border-t">
+                                    <p className="text-sm font-medium mb-3 text-center">
+                                      Horas disponibles para{" "}
+                                      <span className="font-semibold">
+                                        {format(selectedDateInPopover, "PPP", {
+                                          locale: es,
+                                        })}
+                                      </span>
+                                      :
+                                    </p>
+                                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                      {TIME_SLOTS.map((time) => (
+                                        <Button
+                                          key={time}
+                                          variant={
+                                            form.getValues("startTime") ===
+                                              time &&
+                                            form
+                                              .getValues("appointmentDate")
+                                              ?.toDateString() ===
+                                              selectedDateInPopover.toDateString()
+                                              ? "default"
+                                              : "outline"
+                                          }
+                                          size="sm"
+                                          className="text-xs sm:text-sm"
+                                          onClick={() => {
+                                            if (selectedDateInPopover) {
+                                              form.setValue(
+                                                "appointmentDate",
+                                                selectedDateInPopover,
+                                                { shouldValidate: true }
+                                              );
+                                              form.setValue("startTime", time, {
+                                                shouldValidate: true,
+                                              });
+                                              setSelectedDateInPopover(
+                                                undefined
+                                              );
+                                              setIsDateTimePopoverOpen(false);
+                                            }
+                                          }}
+                                        >
+                                          {time}
+                                        </Button>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                            {form.formState.errors.startTime && (
+                              <p className="text-sm font-medium text-destructive">
+                                {form.formState.errors.startTime.message}
+                              </p>
+                            )}
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Location */}
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <BuildingIcon className="w-5 h-5 text-gray-600" />
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          Sala
+                        </h3>
+                      </div>
+
+                      <FormField
+                        control={form.control}
+                        name="room"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-medium text-gray-700">
+                              Selecciona una sala disponible
+                            </FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500">
+                                  <SelectValue placeholder="Selecciona una sala" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {AVAILABLE_ROOMS.map((roomItem) => (
+                                  <SelectItem
+                                    key={roomItem.value}
+                                    value={roomItem.value}
+                                    className="cursor-pointer hover:bg-blue-50"
+                                  >
+                                    {roomItem.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormDescription className="text-gray-600">
+                              Selecciona la habitación donde se realizará la
+                              consulta
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="pt-6 border-t border-gray-200">
+                      <Button
+                        type="submit"
+                        size="lg"
+                        className="w-full h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          <Loading size="sm" text="Programando cita..." />
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <LucideCalendarIcon className="w-5 h-5" />
+                            Programar Cita
+                          </div>
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
           </div>
         </div>
-      </main>
-      <AppFooter />
-    </div>
+      </div>
+    </>
   );
 }
