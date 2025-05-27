@@ -45,7 +45,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
-      <AppHeader />
       <main className="flex-1 overflow-hidden">
         {/* Elementos decorativos de fondo */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -184,7 +183,6 @@ export default function HomePage() {
           </div>
         </motion.div>
       </main>
-      <AppFooter />
     </div>
   );
 }
