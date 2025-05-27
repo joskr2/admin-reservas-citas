@@ -93,7 +93,7 @@ export default function LoginPage() {
                     className="pl-10 pr-10 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                     required
                   />
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
@@ -103,7 +103,7 @@ export default function LoginPage() {
                     ) : (
                       <Eye className="w-5 h-5" />
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
 

@@ -11,21 +11,44 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useAuth } from "@clerk/nextjs";
 
 export default function CitasList() {
   const [citas, setCitas] = useState<Cita[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { userId } = useAuth();
-  const usuario = obtenerUsuarioAutenticado(userId);
+  const [currentProfile, setCurrentProfile] = useState<any>(null);
+
+  useEffect(() => {
+    const profileId = localStorage.getItem("selectedProfile");
+    if (profileId) {
+      const MOCK_PROFILES = [
+        { id: 1, nombre: "Dr. Ana María González", correo: "ana.gonzalez@psicologia.com", tipo: "psicologo" },
+        { id: 2, nombre: "Dr. Carlos Mendoza", correo: "carlos.mendoza@psicologia.com", tipo: "psicologo" },
+        { id: 3, nombre: "Cliente Juan", correo: "juan@email.com", tipo: "cliente" }
+      ];
+      const profile = MOCK_PROFILES.find(p => p.id === Number(profileId));
+      setCurrentProfile(profile);
+    }
+  }, []);
+
+  if (!currentProfile) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
+  const usuario = currentProfile;
   const router = useRouter();
   const esPsicologo = usuario.tipo === "psicologo";
 
   useEffect(() => {
     const cargarCitas = async () => {
+      if (!currentProfile) return;
+      
       setIsLoading(true);
       try {
-        const response = await obtenerCitasUsuario(usuario.id);
+        const response = await obtenerCitasUsuario(currentProfile.id);
         if (response.success && response.data) {
           setCitas(response.data);
         } else {
@@ -40,7 +63,7 @@ export default function CitasList() {
     };
 
     cargarCitas();
-  }, [usuario.id]);
+  }, [currentProfile]);
 
   const handleNuevaCita = () => {
     router.push("/admin/citas/nueva");

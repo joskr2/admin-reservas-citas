@@ -11,7 +11,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { PlusCircle, ChevronLeft, ChevronRight, Calendar, Clock, User, CalendarDays, CalendarCheck, CalendarRange } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useAuth } from "@clerk/nextjs";
 import CitaModal from "./CitaModal";
 import { PageLoading } from "@/components/ui/loading";
 import AppHeader from "@/components/layout/AppHeader";
@@ -27,15 +26,35 @@ export default function CalendarioMejorado() {
   const [vistaActual, setVistaActual] = useState<VistaCalendario>("mes");
   const [citaSeleccionada, setCitaSeleccionada] = useState<Cita | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { userId } = useAuth();
-  const usuario = obtenerUsuarioAutenticado(userId);
+  const [currentProfile, setCurrentProfile] = useState<any>(null);
+
+  useEffect(() => {
+    const profileId = localStorage.getItem("selectedProfile");
+    if (profileId) {
+      const MOCK_PROFILES = [
+        { id: 1, nombre: "Dr. Ana María González", correo: "ana.gonzalez@psicologia.com", tipo: "psicologo" },
+        { id: 2, nombre: "Dr. Carlos Mendoza", correo: "carlos.mendoza@psicologia.com", tipo: "psicologo" },
+        { id: 3, nombre: "Cliente Juan", correo: "juan@email.com", tipo: "cliente" }
+      ];
+      const profile = MOCK_PROFILES.find(p => p.id === Number(profileId));
+      setCurrentProfile(profile);
+    }
+  }, []);
+
+  if (!currentProfile) {
+    return <PageLoading text="Cargando perfil..." />;
+  }
+
+  const usuario = currentProfile;
   const router = useRouter();
   const esPsicologo = usuario.tipo === "psicologo";
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    cargarCitas();
-  }, [usuario.id]);
+    if (currentProfile) {
+      cargarCitas();
+    }
+  }, [currentProfile]);
 
   const cargarCitas = async () => {
     setIsLoading(true);

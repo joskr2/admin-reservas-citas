@@ -1,6 +1,6 @@
-import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -13,22 +13,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-	title: "Mi App",
-	description: "Descripción de mi app",
+	title: "Sistema de Citas Horizonte",
+	description: "Sistema de gestión de citas médicas para psicólogos",
 };
 
 export default function RootLayout({
 	children,
 }: { children: React.ReactNode }) {
 	return (
-		<ClerkProvider>
-			<html lang="es" suppressHydrationWarning>
-				<body
-					className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-				>
-					{children}
-				</body>
-			</html>
-		</ClerkProvider>
+		<html lang="es" suppressHydrationWarning>
+			<body
+				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+			>
+				{children}
+				<Toaster />
+			</body>
+		</html>
 	);
 }

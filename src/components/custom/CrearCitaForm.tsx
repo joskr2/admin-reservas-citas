@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
 	Form,
@@ -23,9 +23,9 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { crearCita, obtenerUsuarioAutenticado } from "@/lib/api";
+import { crearCita } from "@/lib/api";
 import { toast } from "sonner";
-import { useAuth } from "@clerk/nextjs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CalendarIcon, ClockIcon, UserIcon, BuildingIcon } from "lucide-react";
 import { Loading } from "@/components/ui/loading";
 import AppHeader from "@/components/layout/AppHeader";
@@ -49,7 +49,7 @@ const formSchema = z.object({
 		message: "Por favor selecciona la hora de finalización.",
 	}),
 	habitacion: z.string().min(1, {
-		message: "Por favor ingresa un número de habitación.",
+		message: "Por favor selecciona una habitación.",
 	}),
 });
 
@@ -58,8 +58,33 @@ type FormValues = z.infer<typeof formSchema>;
 export default function CrearCitaForm() {
 	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const { userId } = useAuth();
-	const usuarioLogueado = obtenerUsuarioAutenticado(userId);
+	const [currentProfile, setCurrentProfile] = useState<any>(null);
+	
+	// Obtener perfil seleccionado del localStorage
+	const getSelectedProfile = () => {
+		const profileId = localStorage.getItem("selectedProfile");
+		const MOCK_PROFILES = [
+			{ id: 1, nombre: "Dr. Ana María González", correo: "ana.gonzalez@psicologia.com" },
+			{ id: 2, nombre: "Dr. Carlos Mendoza", correo: "carlos.mendoza@psicologia.com" },
+			{ id: 3, nombre: "Dra. Laura Jiménez", correo: "laura.jimenez@psicologia.com" },
+			{ id: 4, nombre: "Dr. Miguel Torres", correo: "miguel.torres@psicologia.com" },
+			{ id: 5, nombre: "Dra. Elena Vásquez", correo: "elena.vasquez@psicologia.com" }
+		];
+		return MOCK_PROFILES.find(p => p.id === Number(profileId)) || MOCK_PROFILES[0];
+	};
+	
+	useEffect(() => {
+		const profile = getSelectedProfile();
+		setCurrentProfile(profile);
+	}, []);
+	
+	const HABITACIONES = [
+		{ value: "sala-a", label: "Sala A" },
+		{ value: "sala-b", label: "Sala B" },
+		{ value: "sala-c", label: "Sala C" },
+		{ value: "sala-d", label: "Sala D" },
+		{ value: "sala-e", label: "Sala E" }
+	];
 
 	// Inicializar el formulario
 	const form = useForm<FormValues>({
@@ -87,21 +112,24 @@ export default function CrearCitaForm() {
 			}
 
 			// Preparar los datos para enviar a la API
+			const selectedRoom = HABITACIONES.find(h => h.value === values.habitacion);
 			const citaData = {
 				psicologo: {
-					id: usuarioLogueado.id,
-					nombre: usuarioLogueado.nombre,
-					correo: usuarioLogueado.correo,
+					id: currentProfile?.id || 1,
+					nombre: currentProfile?.nombre || "Dr. Desconocido",
+					correo: currentProfile?.correo || "desconocido@ejemplo.com",
 				},
 				cliente: {
-					id: `cliente_${Date.now()}`, // Generamos un ID único para el cliente
+					id: `cliente_${Date.now()}`,
 					nombre: values.nombreCliente,
 					correo: values.correoCliente,
 				},
-				fecha: values.fecha, // Enviar la fecha en formato YYYY-MM-DD
+				fecha: values.fecha,
 				hora_inicio: values.horaInicio,
 				hora_fin: values.horaFin,
-				habitacion: values.habitacion,
+				habitacion: {
+					numero: selectedRoom?.label || values.habitacion
+				},
 			};
 
 			console.log("Enviando datos de cita:", citaData);
@@ -123,6 +151,18 @@ export default function CrearCitaForm() {
 		} finally {
 			setIsSubmitting(false);
 		}
+	}
+
+	// Mostrar loading mientras carga el perfil
+	if (!currentProfile) {
+		return (
+			<div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+				<div className="text-center">
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+					<p className="text-gray-600">Cargando perfil...</p>
+				</div>
+			</div>
+		);
 	}
 
 	return (
@@ -155,10 +195,10 @@ export default function CrearCitaForm() {
 								</CardHeader>
 								<CardContent className="text-center">
 									<h3 className="font-semibold text-lg text-gray-900 mb-1">
-										{usuarioLogueado.nombre}
+										{currentProfile?.nombre || "Cargando..."}
 									</h3>
 									<p className="text-sm text-gray-600 mb-4">
-										{usuarioLogueado.correo}
+										{currentProfile?.correo || "Cargando..."}
 									</p>
 									<div className="bg-green-50 border border-green-200 rounded-lg p-3">
 										<p className="text-green-800 text-sm font-medium">
@@ -327,18 +367,28 @@ export default function CrearCitaForm() {
 													render={({ field }) => (
 														<FormItem>
 															<FormLabel className="text-sm font-medium text-gray-700">
-																Número de Habitación
+																Habitación
 															</FormLabel>
-															<FormControl>
-																<Input
-																	placeholder="Ej: 101, 205, A-3"
-																	className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-																	{...field}
-																/>
-															</FormControl>
+															<Select onValueChange={field.onChange} defaultValue={field.value}>
+																<FormControl>
+																	<SelectTrigger className="h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500">
+																		<SelectValue placeholder="Selecciona una habitación" />
+																	</SelectTrigger>
+																</FormControl>
+																<SelectContent>
+																	{HABITACIONES.map((habitacion) => (
+																		<SelectItem 
+																			key={habitacion.value} 
+																			value={habitacion.value}
+																			className="cursor-pointer hover:bg-blue-50"
+																		>
+																			{habitacion.label}
+																		</SelectItem>
+																	))}
+																</SelectContent>
+															</Select>
 															<FormDescription className="text-gray-600">
-																Ingrese el número de la habitación donde se
-																realizará la consulta
+																Selecciona la habitación donde se realizará la consulta
 															</FormDescription>
 															<FormMessage />
 														</FormItem>

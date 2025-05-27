@@ -1,10 +1,8 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const { userId } = await auth();
-
+  // Mock authentication - always return true for now
   return NextResponse.json({
-    authenticated: !!userId,
+    authenticated: true,
   });
 }
