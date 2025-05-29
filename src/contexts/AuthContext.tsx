@@ -53,6 +53,28 @@ const convertMockUser = (mockUser: MockUser): User => ({
 	profileId: mockUser.profileId,
 });
 
+// 🆕 FUNCIONES HELPER PARA COOKIES
+const setCookie = (name: string, value: string, days = 7) => {
+	const expires = new Date();
+	expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+	document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;secure;sameSite=strict`;
+};
+
+const getCookie = (name: string): string | null => {
+	const nameEQ = `${name}=`;
+	const ca = document.cookie.split(";");
+	for (let i = 0; i < ca.length; i++) {
+		let c = ca[i];
+		while (c.charAt(0) === " ") c = c.substring(1, c.length);
+		if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+	}
+	return null;
+};
+
+const deleteCookie = (name: string) => {
+	document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
 	const [user, setUser] = useState<User | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -72,8 +94,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			// Simular delay de red
 			await simulateNetworkDelay();
 
-			// Verificar token almacenado
-			const token = localStorage.getItem("authToken");
+			// 🔧 BUSCAR EN AMBOS LUGARES
+			const tokenFromStorage = localStorage.getItem("authToken");
+			const tokenFromCookie = getCookie("auth-token");
+			const token = tokenFromCookie || tokenFromStorage;
+
 			const userJson = localStorage.getItem("currentUser");
 
 			if (!token || !userJson) {
@@ -93,6 +118,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 				const convertedUser = convertMockUser(mockUser);
 				setUser(convertedUser);
 
+				// 🆕 SINCRONIZAR TOKENS EN AMBOS LUGARES
+				if (tokenFromStorage && !tokenFromCookie) {
+					setCookie("auth-token", tokenFromStorage);
+				} else if (tokenFromCookie && !tokenFromStorage) {
+					localStorage.setItem("authToken", tokenFromCookie);
+				}
+
 				// Si tiene profileId, guardarlo para las citas
 				if (convertedUser.profileId) {
 					localStorage.setItem("selectedProfile", convertedUser.profileId);
@@ -102,15 +134,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 				localStorage.removeItem("authToken");
 				localStorage.removeItem("currentUser");
 				localStorage.removeItem("selectedProfile");
+				deleteCookie("auth-token");
 				setUser(null);
 			}
 		} catch (err) {
 			console.error("Error verificando autenticación:", err);
 			setError("Error de conexión al verificar la sesión");
 			setUser(null);
+
+			// 🔧 LIMPIAR AMBOS LUGARES
 			localStorage.removeItem("authToken");
 			localStorage.removeItem("currentUser");
 			localStorage.removeItem("selectedProfile");
+			deleteCookie("auth-token");
 		} finally {
 			setLoading(false);
 		}
@@ -134,8 +170,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 				// Crear token simulado
 				const token = `mock_token_${mockUser.id}_${Date.now()}`;
 
-				// Guardar en localStorage
+				// 🆕 GUARDAR EN AMBOS LUGARES
 				localStorage.setItem("authToken", token);
+				setCookie("auth-token", token, 7); // 7 días
 
 				// Guardar usuario completo (incluyendo password para re-validación)
 				const userWithPassword = {
@@ -190,12 +227,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			// Simular delay de red
 			await simulateNetworkDelay();
 
-			// Limpiar estado local
+			// 🔧 LIMPIAR ESTADO LOCAL COMPLETO
 			setUser(null);
 			setError(null);
 			localStorage.removeItem("authToken");
 			localStorage.removeItem("currentUser");
 			localStorage.removeItem("selectedProfile");
+			deleteCookie("auth-token");
 
 			toast.success("Sesión cerrada correctamente");
 			router.push("/login");

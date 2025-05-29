@@ -20,22 +20,28 @@ export async function middleware(request: NextRequest) {
 	);
 
 	if (isProtectedRoute) {
-		// Obtener token de las cookies
+		// 🔧 BUSCAR TOKEN EN COOKIES (COINCIDE CON AuthContext)
 		const token = request.cookies.get("auth-token")?.value;
 
+		console.log(
+			"🔍 Middleware - Verificando token:",
+			token ? "Existe" : "No existe",
+		);
+		console.log("🔍 Middleware - Ruta:", pathname);
+
 		if (!token) {
+			console.log("❌ Middleware - Sin token, redirigiendo a login");
 			// Si no hay token, redirigir a login
 			const loginUrl = new URL("/login", request.url);
 			loginUrl.searchParams.set("from", pathname);
 			return NextResponse.redirect(loginUrl);
 		}
 
-		// Para mock data, simplemente verificar que el token exista
-		// En producción, aquí se haría la validación real del token
+		// Para mock data, verificar que el token tenga formato válido
 		try {
-			// Simular verificación de token
-			// En mock, solo verificamos que el token tenga formato válido
+			// 🔧 VERIFICACIÓN MEJORADA DEL TOKEN MOCK
 			if (!token.startsWith("mock_token_")) {
+				console.log("❌ Middleware - Token inválido, no es mock");
 				// Token inválido, redirigir a login
 				const response = NextResponse.redirect(new URL("/login", request.url));
 				response.cookies.delete("auth-token");
@@ -45,6 +51,7 @@ export async function middleware(request: NextRequest) {
 			// Extraer información básica del token mock
 			const tokenParts = token.split("_");
 			if (tokenParts.length < 3) {
+				console.log("❌ Middleware - Token mal formado");
 				// Token mal formado
 				const response = NextResponse.redirect(new URL("/login", request.url));
 				response.cookies.delete("auth-token");
@@ -52,10 +59,25 @@ export async function middleware(request: NextRequest) {
 			}
 
 			const userId = tokenParts[2]; // mock_token_{userId}_{timestamp}
+			const timestamp = tokenParts[3];
+
+			// 🆕 VERIFICAR QUE EL TOKEN NO SEA MUY VIEJO (OPCIONAL)
+			const tokenAge = Date.now() - +(timestamp);
+			const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 días
+
+			if (tokenAge > maxAge) {
+				console.log("❌ Middleware - Token expirado");
+				const response = NextResponse.redirect(new URL("/login", request.url));
+				response.cookies.delete("auth-token");
+				return response;
+			}
+
+			console.log("✅ Middleware - Token válido para usuario:", userId);
 
 			// Agregar información del usuario a los headers para uso en las páginas
 			const requestHeaders = new Headers(request.headers);
 			requestHeaders.set("x-user-id", userId);
+			requestHeaders.set("x-token-valid", "true");
 
 			return NextResponse.next({
 				request: {
@@ -63,7 +85,7 @@ export async function middleware(request: NextRequest) {
 				},
 			});
 		} catch (error) {
-			console.error("Error verificando token:", error);
+			console.error("❌ Middleware - Error verificando token:", error);
 			// En caso de error, redirigir a login
 			const response = NextResponse.redirect(new URL("/login", request.url));
 			response.cookies.delete("auth-token");
@@ -71,19 +93,42 @@ export async function middleware(request: NextRequest) {
 		}
 	}
 
-	// Si el usuario está autenticado y trata de acceder a login, redirigir a admin
+	// 🔧 MEJORAR REDIRECCIÓN DESDE LOGIN
 	if (pathname === "/login") {
 		const token = request.cookies.get("auth-token")?.value;
 
 		if (token?.startsWith("mock_token_")) {
 			try {
-				// Token válido, redirigir a admin
-				return NextResponse.redirect(new URL("/admin", request.url));
+				const tokenParts = token.split("_");
+				if (tokenParts.length >= 3) {
+					const timestamp = tokenParts[3];
+					const tokenAge = Date.now() - +(timestamp);
+					const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 días
+
+					// Si el token es válido y no ha expirado
+					if (tokenAge <= maxAge) {
+						console.log("✅ Middleware - Usuario ya autenticado, redirigiendo");
+						return NextResponse.redirect(new URL("/admin/citas", request.url));
+					}
+				}
 			} catch (error) {
-				// Si hay error, permitir acceso a login
-				console.error("Error verificando autenticación:", error);
+				console.error(
+					"❌ Middleware - Error verificando token en login:",
+					error,
+				);
+				// Si hay error, permitir acceso a login pero limpiar cookie
+				const response = NextResponse.next();
+				response.cookies.delete("auth-token");
+				return response;
 			}
 		}
+	}
+
+	// 🆕 LOGGING PARA DEBUG (REMOVER EN PRODUCCIÓN)
+	if (process.env.NODE_ENV === "development") {
+		console.log(
+			`🔍 Middleware - ${pathname} - ${isProtectedRoute ? "Protegida" : "Pública"}`,
+		);
 	}
 
 	return NextResponse.next();
