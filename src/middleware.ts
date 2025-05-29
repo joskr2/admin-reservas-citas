@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8002";
-
 export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 
@@ -22,10 +20,8 @@ export async function middleware(request: NextRequest) {
 	);
 
 	if (isProtectedRoute) {
-		// Obtener token de las cookies o del header
-		const token =
-			request.cookies.get("auth-token")?.value ||
-			request.headers.get("authorization")?.replace("Bearer ", "");
+		// Obtener token de las cookies
+		const token = request.cookies.get("auth-token")?.value;
 
 		if (!token) {
 			// Si no hay token, redirigir a login
@@ -34,37 +30,32 @@ export async function middleware(request: NextRequest) {
 			return NextResponse.redirect(loginUrl);
 		}
 
+		// Para mock data, simplemente verificar que el token exista
+		// En producción, aquí se haría la validación real del token
 		try {
-			// Verificar token con el backend
-			const verifyResponse = await fetch(`${API_URL}/auth/verify`, {
-				method: "GET",
-				headers: {
-					Authorization: `Bearer ${token}`,
-					"Content-Type": "application/json",
-				},
-			});
-
-			if (!verifyResponse.ok) {
+			// Simular verificación de token
+			// En mock, solo verificamos que el token tenga formato válido
+			if (!token.startsWith("mock_token_")) {
 				// Token inválido, redirigir a login
 				const response = NextResponse.redirect(new URL("/login", request.url));
-				// Eliminar cookie si existe
 				response.cookies.delete("auth-token");
 				return response;
 			}
 
-			const userData = await verifyResponse.json();
-
-			// Verificar permisos según la ruta
-			if (pathname.startsWith("/admin") && userData.user.role === "cliente") {
-				// Los clientes no pueden acceder a rutas de admin
-				return NextResponse.redirect(new URL("/", request.url));
+			// Extraer información básica del token mock
+			const tokenParts = token.split("_");
+			if (tokenParts.length < 3) {
+				// Token mal formado
+				const response = NextResponse.redirect(new URL("/login", request.url));
+				response.cookies.delete("auth-token");
+				return response;
 			}
+
+			const userId = tokenParts[2]; // mock_token_{userId}_{timestamp}
 
 			// Agregar información del usuario a los headers para uso en las páginas
 			const requestHeaders = new Headers(request.headers);
-			requestHeaders.set("x-user-id", userData.user.id);
-			requestHeaders.set("x-user-role", userData.user.role);
-			requestHeaders.set("x-user-email", userData.user.email);
+			requestHeaders.set("x-user-id", userId);
 
 			return NextResponse.next({
 				request: {
@@ -80,33 +71,14 @@ export async function middleware(request: NextRequest) {
 		}
 	}
 
-	// Si el usuario está autenticado y trata de acceder a login, redirigir a home
+	// Si el usuario está autenticado y trata de acceder a login, redirigir a admin
 	if (pathname === "/login") {
-		const token =
-			request.cookies.get("auth-token")?.value ||
-			request.headers.get("authorization")?.replace("Bearer ", "");
+		const token = request.cookies.get("auth-token")?.value;
 
-		if (token) {
+		if (token?.startsWith("mock_token_")) {
 			try {
-				const verifyResponse = await fetch(`${API_URL}/auth/verify`, {
-					method: "GET",
-					headers: {
-						Authorization: `Bearer ${token}`,
-						"Content-Type": "application/json",
-					},
-				});
-
-				if (verifyResponse.ok) {
-					const userData = await verifyResponse.json();
-					// Redirigir según el rol
-					if (userData.user.role === "psicologo") {
-						return NextResponse.redirect(new URL("/admin/citas", request.url));
-					}
-					if (userData.user.role === "admin") {
-						return NextResponse.redirect(new URL("/admin", request.url));
-					}
-					return NextResponse.redirect(new URL("/", request.url));
-				}
+				// Token válido, redirigir a admin
+				return NextResponse.redirect(new URL("/admin", request.url));
 			} catch (error) {
 				// Si hay error, permitir acceso a login
 				console.error("Error verificando autenticación:", error);

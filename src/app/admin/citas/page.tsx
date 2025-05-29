@@ -26,39 +26,7 @@ import { toast } from "sonner";
 import CitaModal from "@/components/custom/CitaModal";
 import { PageLoading } from "@/components/ui/loading";
 import { cn } from "@/lib/utils";
-
-const MOCK_PROFILES = [
-	{
-		id: 1,
-		nombre: "Dr. Ana María González",
-		correo: "ana.gonzalez@psicologia.com",
-		tipo: "psicologo",
-	},
-	{
-		id: 2,
-		nombre: "Dr. Carlos Mendoza",
-		correo: "carlos.mendoza@psicologia.com",
-		tipo: "psicologo",
-	},
-	{
-		id: 3,
-		nombre: "Dra. Laura Jiménez",
-		correo: "laura.jimenez@psicologia.com",
-		tipo: "psicologo",
-	},
-	{
-		id: 4,
-		nombre: "Dr. Miguel Torres",
-		correo: "miguel.torres@psicologia.com",
-		tipo: "psicologo",
-	},
-	{
-		id: 5,
-		nombre: "Dra. Elena Vásquez",
-		correo: "elena.vasquez@psicologia.com",
-		tipo: "psicologo",
-	},
-];
+import { MOCK_USERS } from "@/lib/mockData";
 
 type VistaCalendario = "hoy" | "semana" | "mes";
 
@@ -77,8 +45,18 @@ export default function CitasPage() {
 		// Obtener perfil seleccionado
 		const profileId = localStorage.getItem("selectedProfile");
 		if (profileId) {
-			const profile = MOCK_PROFILES.find((p) => p.id === Number(profileId));
-			setCurrentProfile(profile);
+			const profile = MOCK_USERS.find((p) => p.id === profileId);
+			if (profile) {
+				setCurrentProfile({
+					id: profile.id,
+					nombre: profile.nombre,
+					correo: profile.correo,
+					tipo: profile.rol,
+				});
+			} else {
+				router.push("/admin/profiles");
+				return;
+			}
 		} else {
 			router.push("/admin/profiles");
 			return;
@@ -101,12 +79,12 @@ export default function CitasPage() {
 				setCitas(response.data);
 			} else {
 				toast.error("Error al cargar las citas");
-				setCitas([]); // Set empty array if error
+				setCitas([]);
 			}
 		} catch (error) {
 			console.error("Error al cargar citas:", error);
 			toast.error("Ha ocurrido un error al cargar las citas");
-			setCitas([]); // Set empty array if error
+			setCitas([]);
 		} finally {
 			setIsLoading(false);
 		}
@@ -288,7 +266,7 @@ export default function CitasPage() {
 							<div className="space-y-4">
 								{citasHoy.map((cita) => (
 									// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-<div
+									<div
 										key={cita.id}
 										className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/50 dark:to-purple-950/50 rounded-xl border border-blue-200 dark:border-blue-800 cursor-pointer hover:shadow-md transition-all duration-200 transform hover:scale-105"
 										onClick={() => handleCitaClick(cita)}
@@ -305,7 +283,7 @@ export default function CitasPage() {
 													{cita.cliente.correo}
 												</p>
 												<p className="text-sm text-gray-500 dark:text-gray-500">
-													Habitación {cita.habitacion.numero}
+													Sala {cita.habitacion.numero}
 												</p>
 											</div>
 										</div>
@@ -319,10 +297,10 @@ export default function CitasPage() {
 											<span
 												className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
 													cita.estado === "pendiente"
-														? "bg-yellow-100 text-yellow-800"
+														? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
 														: cita.estado === "en_progreso"
-															? "bg-blue-100 text-blue-800"
-															: "bg-green-100 text-green-800"
+															? "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+															: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
 												}`}
 											>
 												{cita.estado === "pendiente"
@@ -370,13 +348,13 @@ export default function CitasPage() {
 									}`}
 								>
 									<div
-										className={`text-center mb-3 ${esHoyDia ? "text-blue-600" : "text-gray-900 dark:text-gray-100"}`}
+										className={`text-center mb-3 ${esHoyDia ? "text-blue-600 dark:text-blue-400" : "text-gray-900 dark:text-gray-100"}`}
 									>
 										<p className="text-xs font-medium uppercase tracking-wide">
 											{["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"][index]}
 										</p>
 										<p
-											className={`text-lg font-bold ${esHoyDia ? "text-blue-600" : "text-gray-900 dark:text-gray-100"}`}
+											className={`text-lg font-bold ${esHoyDia ? "text-blue-600 dark:text-blue-400" : "text-gray-900 dark:text-gray-100"}`}
 										>
 											{dia.getDate()}
 										</p>
@@ -385,7 +363,7 @@ export default function CitasPage() {
 									<div className="space-y-2">
 										{citasDelDia.slice(0, 3).map((cita) => (
 											// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-<div
+											<div
 												key={cita.id}
 												className="text-xs p-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded cursor-pointer hover:from-blue-600 hover:to-purple-600 transition-all duration-200"
 												onClick={() => handleCitaClick(cita)}
@@ -454,7 +432,7 @@ export default function CitasPage() {
 									<div
 										className={`text-xs sm:text-sm font-medium mb-1 sm:mb-2 ${
 											esEsteHoy
-												? "text-blue-600"
+												? "text-blue-600 dark:text-blue-400"
 												: esDelMesActual
 													? "text-gray-900 dark:text-gray-100"
 													: "text-gray-400 dark:text-gray-500"
@@ -467,7 +445,7 @@ export default function CitasPage() {
 										<div className="space-y-1">
 											{citasDelDia.slice(0, 2).map((cita) => (
 												// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-<div
+												<div
 													key={cita.id}
 													className="text-[10px] sm:text-xs p-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded truncate cursor-pointer hover:from-blue-600 hover:to-purple-600 transition-all duration-200"
 													onClick={() => handleCitaClick(cita)}
@@ -585,7 +563,10 @@ export default function CitasPage() {
 						isOpen={isModalOpen}
 						onClose={handleCloseModal}
 						onUpdate={handleUpdateCita}
-						esPsicologo={currentProfile?.tipo === "psicologo"}
+						esPsicologo={
+							currentProfile?.tipo === "psicologo" ||
+							currentProfile?.tipo === "admin"
+						}
 					/>
 				</div>
 			</main>

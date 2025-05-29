@@ -1,7 +1,10 @@
 // src/lib/api.ts
 import { toast } from "sonner";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8002";
+import {
+	mockDataManager,
+	type MockCita,
+	type MockHabitacion,
+} from "./mockData";
 
 // Tipos
 export type Usuario = {
@@ -56,145 +59,29 @@ export class APIError extends Error {
 	}
 }
 
-// Función para obtener el token
-function getAuthToken(): string | null {
-	return localStorage.getItem("authToken");
-}
+// Función para simular delay de red
+const simulateNetworkDelay = (): Promise<void> => {
+	return new Promise((resolve) =>
+		setTimeout(resolve, Math.random() * 500 + 200),
+	);
+};
 
-// Interceptor global para manejar errores y autenticación
-async function fetchWithAuth(
-	url: string,
-	options: RequestInit = {},
-): Promise<Response> {
-	try {
-		const token = getAuthToken();
+// Función para convertir MockCita a Cita
+const convertMockCita = (mockCita: MockCita): Cita => ({
+	id: mockCita.id,
+	psicologo: mockCita.psicologo,
+	cliente: mockCita.cliente,
+	fecha: mockCita.fecha,
+	hora_inicio: mockCita.hora_inicio,
+	hora_fin: mockCita.hora_fin,
+	habitacion: mockCita.habitacion,
+	estado: mockCita.estado,
+	notas: mockCita.notas,
+	created_at: mockCita.created_at,
+	updated_at: mockCita.updated_at,
+});
 
-		const headers: HeadersInit = {
-			"Content-Type": "application/json",
-			...options.headers,
-		};
-
-		if (token) {
-			//@ts-ignore
-			// biome-ignore lint/complexity/useLiteralKeys: <explanation>
-			headers["Authorization"] = `Bearer ${token}`;
-		}
-
-		const response = await fetch(url, {
-			...options,
-			headers,
-			credentials: "include",
-		});
-
-		// Manejar errores HTTP
-		if (!response.ok) {
-			let errorMessage = "Error en la solicitud";
-			let errorDetails = null;
-			let errorCode = "UNKNOWN_ERROR";
-
-			try {
-				const errorData = await response.json();
-				errorMessage = errorData.message || errorMessage;
-				errorDetails = errorData.details;
-				errorCode = errorData.code || errorCode;
-			} catch {
-				// Si no se puede parsear el error como JSON
-				errorMessage = `Error ${response.status}: ${response.statusText}`;
-			}
-
-			// Manejar casos específicos
-			switch (response.status) {
-				case 401:
-					// Token expirado o inválido
-					localStorage.removeItem("authToken");
-					localStorage.removeItem("selectedProfile");
-					window.location.href = "/login?session=expired";
-					throw new APIError("Sesión expirada", 401, "UNAUTHORIZED");
-
-				case 403:
-					throw new APIError(
-						"No tienes permisos para esta acción",
-						403,
-						"FORBIDDEN",
-					);
-
-				case 404:
-					throw new APIError("Recurso no encontrado", 404, "NOT_FOUND");
-
-				case 409:
-					throw new APIError(
-						errorMessage || "Conflicto: El recurso ya existe",
-						409,
-						"CONFLICT",
-						errorDetails,
-					);
-
-				case 422:
-					throw new APIError(
-						errorMessage || "Datos inválidos",
-						422,
-						"VALIDATION_ERROR",
-						errorDetails,
-					);
-
-				case 429:
-					throw new APIError(
-						"Demasiadas solicitudes. Intenta más tarde",
-						429,
-						"RATE_LIMITED",
-					);
-
-				case 500:
-				case 502:
-				case 503:
-					throw new APIError(
-						"Error del servidor. Intenta más tarde",
-						response.status,
-						"SERVER_ERROR",
-					);
-
-				default:
-					throw new APIError(
-						errorMessage,
-						response.status,
-						errorCode,
-						errorDetails,
-					);
-			}
-		}
-
-		return response;
-	} catch (error) {
-		// Manejar errores de red
-		if (error instanceof TypeError && error.message === "Failed to fetch") {
-			throw new APIError(
-				"Error de conexión. Verifica tu internet",
-				0,
-				"NETWORK_ERROR",
-			);
-		}
-
-		throw error;
-	}
-}
-
-// Función helper para manejar respuestas
-async function handleApiResponse<T>(
-	response: Response,
-): Promise<ApiResponse<T>> {
-	try {
-		const data = await response.json();
-		return {
-			success: true,
-			message: data.message || "Operación exitosa",
-			data: data.data || data,
-		};
-	} catch (error) {
-		throw new APIError("Error al procesar la respuesta", 500, "PARSE_ERROR");
-	}
-}
-
-// ============ FUNCIONES DE LA API ============
+// ============ FUNCIONES DE LA API (MOCK) ============
 
 // Crear una cita
 export async function crearCita(data: {
@@ -207,44 +94,46 @@ export async function crearCita(data: {
 	notas?: string;
 }): Promise<ApiResponse<Cita>> {
 	try {
+		await simulateNetworkDelay();
+
 		console.log("Creando cita con datos:", data);
 
-		const response = await fetchWithAuth(`${API_URL}/citas/`, {
-			method: "POST",
-			body: JSON.stringify(data),
-		});
+		const nuevaCita = mockDataManager.createCita(data);
+		const citaConvertida = convertMockCita(nuevaCita);
 
-		const result = await handleApiResponse<Cita>(response);
 		toast.success("Cita creada exitosamente");
-		return result;
-	} catch (error) {
-		if (error instanceof APIError) {
-			// Mostrar toast específico según el tipo de error
-			if (error.code === "CONFLICT") {
-				toast.error("Ya existe una cita en ese horario");
-			} else if (error.code === "VALIDATION_ERROR") {
-				toast.error("Por favor verifica los datos ingresados");
-			} else {
-				toast.error(error.message);
-			}
 
+		return {
+			success: true,
+			message: "Cita creada exitosamente",
+			data: citaConvertida,
+		};
+	} catch (error) {
+		console.error("Error al crear cita:", error);
+
+		const errorMessage =
+			error instanceof Error ? error.message : "Error desconocido";
+
+		if (errorMessage.includes("Ya existe una cita")) {
+			toast.error("Ya existe una cita en ese horario y habitación");
 			return {
 				success: false,
-				message: error.message,
+				message: "Ya existe una cita en ese horario y habitación",
 				error: {
-					code: error.code,
-					details: error.details,
+					code: "CONFLICT",
+					details: error,
 				},
 			};
 		}
 
-		// Error inesperado
-		console.error("Error inesperado:", error);
-		toast.error("Ha ocurrido un error inesperado");
-
+		toast.error("Ha ocurrido un error al crear la cita");
 		return {
 			success: false,
-			message: "Error inesperado. Por favor contacta soporte.",
+			message: "Error al crear la cita",
+			error: {
+				code: "UNKNOWN_ERROR",
+				details: error,
+			},
 		};
 	}
 }
@@ -254,29 +143,27 @@ export async function obtenerCitasUsuario(
 	usuarioId: string,
 ): Promise<ApiResponse<Cita[]>> {
 	try {
-		const response = await fetchWithAuth(
-			`${API_URL}/citas/usuario/${usuarioId}`,
-		);
-		return await handleApiResponse<Cita[]>(response);
-	} catch (error) {
-		if (error instanceof APIError) {
-			console.error(`Error al obtener citas: ${error.message}`);
-			return {
-				success: false,
-				message: error.message,
-				data: [],
-				error: {
-					code: error.code,
-					details: error.details,
-				},
-			};
-		}
+		await simulateNetworkDelay();
 
-		console.error("Error inesperado al obtener citas:", error);
+		const citas = mockDataManager.getCitasByUsuario(usuarioId);
+		const citasConvertidas = citas.map(convertMockCita);
+
+		return {
+			success: true,
+			message: "Citas obtenidas exitosamente",
+			data: citasConvertidas,
+		};
+	} catch (error) {
+		console.error("Error al obtener citas:", error);
+
 		return {
 			success: false,
 			message: "Error al obtener las citas",
 			data: [],
+			error: {
+				code: "FETCH_ERROR",
+				details: error,
+			},
 		};
 	}
 }
@@ -286,27 +173,26 @@ export async function obtenerHabitaciones(): Promise<
 	ApiResponse<Habitacion[]>
 > {
 	try {
-		const response = await fetchWithAuth(`${API_URL}/habitaciones/`);
-		return await handleApiResponse<Habitacion[]>(response);
-	} catch (error) {
-		if (error instanceof APIError) {
-			console.error(`Error al obtener habitaciones: ${error.message}`);
-			return {
-				success: false,
-				message: error.message,
-				data: [],
-				error: {
-					code: error.code,
-					details: error.details,
-				},
-			};
-		}
+		await simulateNetworkDelay();
 
-		console.error("Error inesperado al obtener habitaciones:", error);
+		const habitaciones = mockDataManager.getHabitaciones();
+
+		return {
+			success: true,
+			message: "Habitaciones obtenidas exitosamente",
+			data: habitaciones,
+		};
+	} catch (error) {
+		console.error("Error al obtener habitaciones:", error);
+
 		return {
 			success: false,
 			message: "Error al obtener las habitaciones",
 			data: [],
+			error: {
+				code: "FETCH_ERROR",
+				details: error,
+			},
 		};
 	}
 }
@@ -314,31 +200,39 @@ export async function obtenerHabitaciones(): Promise<
 // Iniciar una cita
 export async function iniciarCita(citaId: string): Promise<ApiResponse<Cita>> {
 	try {
-		const response = await fetchWithAuth(`${API_URL}/citas/${citaId}/iniciar`, {
-			method: "PATCH",
-		});
+		await simulateNetworkDelay();
 
-		const result = await handleApiResponse<Cita>(response);
-		toast.success("Cita iniciada correctamente");
-		return result;
-	} catch (error) {
-		if (error instanceof APIError) {
-			toast.error(error.message);
-			return {
-				success: false,
-				message: error.message,
-				error: {
-					code: error.code,
-					details: error.details,
-				},
-			};
+		const citaActualizada = mockDataManager.updateCitaEstado(
+			citaId,
+			"en_progreso",
+		);
+
+		if (!citaActualizada) {
+			throw new Error("Cita no encontrada");
 		}
 
-		console.error("Error inesperado al iniciar cita:", error);
-		toast.error("Error al iniciar la cita");
+		const citaConvertida = convertMockCita(citaActualizada);
+		toast.success("Cita iniciada correctamente");
+
+		return {
+			success: true,
+			message: "Cita iniciada correctamente",
+			data: citaConvertida,
+		};
+	} catch (error) {
+		console.error("Error al iniciar cita:", error);
+
+		const errorMessage =
+			error instanceof Error ? error.message : "Error al iniciar la cita";
+		toast.error(errorMessage);
+
 		return {
 			success: false,
-			message: "Error al iniciar la cita",
+			message: errorMessage,
+			error: {
+				code: "UPDATE_ERROR",
+				details: error,
+			},
 		};
 	}
 }
@@ -346,34 +240,39 @@ export async function iniciarCita(citaId: string): Promise<ApiResponse<Cita>> {
 // Terminar una cita
 export async function terminarCita(citaId: string): Promise<ApiResponse<Cita>> {
 	try {
-		const response = await fetchWithAuth(
-			`${API_URL}/citas/${citaId}/terminar`,
-			{
-				method: "PATCH",
-			},
+		await simulateNetworkDelay();
+
+		const citaActualizada = mockDataManager.updateCitaEstado(
+			citaId,
+			"terminada",
 		);
 
-		const result = await handleApiResponse<Cita>(response);
-		toast.success("Cita finalizada correctamente");
-		return result;
-	} catch (error) {
-		if (error instanceof APIError) {
-			toast.error(error.message);
-			return {
-				success: false,
-				message: error.message,
-				error: {
-					code: error.code,
-					details: error.details,
-				},
-			};
+		if (!citaActualizada) {
+			throw new Error("Cita no encontrada");
 		}
 
-		console.error("Error inesperado al terminar cita:", error);
-		toast.error("Error al terminar la cita");
+		const citaConvertida = convertMockCita(citaActualizada);
+		toast.success("Cita finalizada correctamente");
+
+		return {
+			success: true,
+			message: "Cita finalizada correctamente",
+			data: citaConvertida,
+		};
+	} catch (error) {
+		console.error("Error al terminar cita:", error);
+
+		const errorMessage =
+			error instanceof Error ? error.message : "Error al terminar la cita";
+		toast.error(errorMessage);
+
 		return {
 			success: false,
-			message: "Error al terminar la cita",
+			message: errorMessage,
+			error: {
+				code: "UPDATE_ERROR",
+				details: error,
+			},
 		};
 	}
 }
@@ -384,35 +283,36 @@ export async function cancelarCita(
 	motivo?: string,
 ): Promise<ApiResponse<Cita>> {
 	try {
-		const response = await fetchWithAuth(
-			`${API_URL}/citas/${citaId}/cancelar`,
-			{
-				method: "PATCH",
-				body: JSON.stringify({ motivo }),
-			},
-		);
+		await simulateNetworkDelay();
 
-		const result = await handleApiResponse<Cita>(response);
-		toast.success("Cita cancelada correctamente");
-		return result;
-	} catch (error) {
-		if (error instanceof APIError) {
-			toast.error(error.message);
-			return {
-				success: false,
-				message: error.message,
-				error: {
-					code: error.code,
-					details: error.details,
-				},
-			};
+		const citaActualizada = mockDataManager.cancelarCita(citaId, motivo);
+
+		if (!citaActualizada) {
+			throw new Error("Cita no encontrada");
 		}
 
-		console.error("Error inesperado al cancelar cita:", error);
-		toast.error("Error al cancelar la cita");
+		const citaConvertida = convertMockCita(citaActualizada);
+		toast.success("Cita cancelada correctamente");
+
+		return {
+			success: true,
+			message: "Cita cancelada correctamente",
+			data: citaConvertida,
+		};
+	} catch (error) {
+		console.error("Error al cancelar cita:", error);
+
+		const errorMessage =
+			error instanceof Error ? error.message : "Error al cancelar la cita";
+		toast.error(errorMessage);
+
 		return {
 			success: false,
-			message: "Error al cancelar la cita",
+			message: errorMessage,
+			error: {
+				code: "UPDATE_ERROR",
+				details: error,
+			},
 		};
 	}
 }
@@ -422,24 +322,37 @@ export async function obtenerUsuarioAutenticado(): Promise<
 	ApiResponse<Usuario>
 > {
 	try {
-		const response = await fetchWithAuth(`${API_URL}/auth/me`);
-		return await handleApiResponse<Usuario>(response);
-	} catch (error) {
-		if (error instanceof APIError) {
-			return {
-				success: false,
-				message: error.message,
-				error: {
-					code: error.code,
-					details: error.details,
-				},
-			};
+		await simulateNetworkDelay();
+
+		// En un entorno real, esto obtendría el usuario del token
+		// Para mock, obtenemos del localStorage si está disponible
+		const userJson = localStorage.getItem("currentUser");
+		if (!userJson) {
+			throw new Error("Usuario no autenticado");
 		}
 
-		console.error("Error inesperado al obtener usuario:", error);
+		const user = JSON.parse(userJson);
+
+		return {
+			success: true,
+			message: "Usuario obtenido exitosamente",
+			data: {
+				id: user.id,
+				nombre: user.nombre,
+				correo: user.correo,
+				rol: user.rol,
+			},
+		};
+	} catch (error) {
+		console.error("Error al obtener usuario:", error);
+
 		return {
 			success: false,
 			message: "Error al obtener información del usuario",
+			error: {
+				code: "AUTH_ERROR",
+				details: error,
+			},
 		};
 	}
 }
@@ -453,38 +366,54 @@ export async function verificarDisponibilidad(params: {
 	habitacionId?: string;
 }): Promise<ApiResponse<{ disponible: boolean; conflictos?: Cita[] }>> {
 	try {
-		const queryParams = new URLSearchParams({
-			psicologo_id: params.psicologoId,
-			fecha: params.fecha,
-			hora_inicio: params.horaInicio,
-			hora_fin: params.horaFin,
-			...(params.habitacionId && { habitacion_id: params.habitacionId }),
-		});
+		await simulateNetworkDelay();
 
-		const response = await fetchWithAuth(
-			`${API_URL}/citas/verificar-disponibilidad?${queryParams}`,
+		const disponible = mockDataManager.isHabitacionAvailable(
+			params.habitacionId || "A-101",
+			params.fecha,
+			params.horaInicio,
+			params.horaFin,
 		);
 
-		return await handleApiResponse<{
-			disponible: boolean;
-			conflictos?: Cita[];
-		}>(response);
-	} catch (error) {
-		if (error instanceof APIError) {
-			return {
-				success: false,
-				message: error.message,
-				error: {
-					code: error.code,
-					details: error.details,
-				},
-			};
+		let conflictos: Cita[] = [];
+		if (!disponible) {
+			// Obtener citas que entran en conflicto
+			const todasLasCitas = mockDataManager.getCitasByUsuario(
+				params.psicologoId,
+			);
+			conflictos = todasLasCitas
+				.filter(
+					(cita) =>
+						cita.fecha === params.fecha &&
+						cita.estado !== "cancelada" &&
+						((params.horaInicio >= cita.hora_inicio &&
+							params.horaInicio < cita.hora_fin) ||
+							(params.horaFin > cita.hora_inicio &&
+								params.horaFin <= cita.hora_fin) ||
+							(params.horaInicio <= cita.hora_inicio &&
+								params.horaFin >= cita.hora_fin)),
+				)
+				.map(convertMockCita);
 		}
 
+		return {
+			success: true,
+			message: "Disponibilidad verificada",
+			data: {
+				disponible,
+				conflictos: conflictos.length > 0 ? conflictos : undefined,
+			},
+		};
+	} catch (error) {
 		console.error("Error verificando disponibilidad:", error);
+
 		return {
 			success: false,
 			message: "Error al verificar disponibilidad",
+			error: {
+				code: "AVAILABILITY_ERROR",
+				details: error,
+			},
 		};
 	}
 }

@@ -28,6 +28,7 @@ import {
 	AlertCircle,
 	Eye,
 	EyeOff,
+	Info,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -49,6 +50,40 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+// Usuarios demo para mostrar en la interfaz
+const DEMO_USERS = [
+	{
+		email: "ana.gonzalez@psicologia.com",
+		name: "Dr. Ana María González",
+		role: "Super Admin",
+		password: "123456",
+	},
+	{
+		email: "carlos.mendoza@psicologia.com",
+		name: "Dr. Carlos Mendoza",
+		role: "Psicólogo",
+		password: "123456",
+	},
+	{
+		email: "laura.jimenez@psicologia.com",
+		name: "Dra. Laura Jiménez",
+		role: "Psicólogo",
+		password: "123456",
+	},
+	{
+		email: "miguel.torres@psicologia.com",
+		name: "Dr. Miguel Torres",
+		role: "Psicólogo",
+		password: "123456",
+	},
+	{
+		email: "elena.vasquez@psicologia.com",
+		name: "Dra. Elena Vásquez",
+		role: "Psicólogo",
+		password: "123456",
+	},
+];
+
 export function LoginForm({
 	className,
 	...props
@@ -66,6 +101,7 @@ export function LoginForm({
 	const [loginAttempts, setLoginAttempts] = useState(0);
 	const [isBlocked, setIsBlocked] = useState(false);
 	const [blockTimeRemaining, setBlockTimeRemaining] = useState(0);
+	const [showDemoUsers, setShowDemoUsers] = useState(false);
 
 	const form = useForm<LoginFormValues>({
 		resolver: zodResolver(loginSchema),
@@ -159,6 +195,12 @@ export function LoginForm({
 		}
 	};
 
+	const handleDemoLogin = (demoUser: (typeof DEMO_USERS)[0]) => {
+		form.setValue("email", demoUser.email);
+		form.setValue("password", demoUser.password);
+		setShowDemoUsers(false);
+	};
+
 	const formatTime = (seconds: number): string => {
 		const mins = Math.floor(seconds / 60);
 		const secs = seconds % 60;
@@ -170,7 +212,60 @@ export function LoginForm({
 			<Card className="overflow-hidden p-0 shadow-2xl border-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md max-w-5xl mx-auto">
 				<CardContent className="grid p-0 md:grid-cols-2">
 					{/* Formulario lado izquierdo */}
-					<div className="p-8 md:p-12 flex flex-col justify-center">
+					<div className="p-8 md:p-12 flex flex-col justify-center relative">
+						{/* Demo Users Info */}
+						<div className="absolute top-4 right-4">
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() => setShowDemoUsers(!showDemoUsers)}
+								className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-950/50"
+							>
+								<Info className="w-4 h-4 mr-2" />
+								Demo
+							</Button>
+						</div>
+
+						{/* Demo Users Panel */}
+						{showDemoUsers && (
+							<div className="absolute top-16 right-4 z-50 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-4">
+								<h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
+									Usuarios de Demo
+								</h3>
+								<div className="space-y-2">
+									{DEMO_USERS.map((user, index) => (
+										<Button
+											// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+											key={index}
+											variant="ghost"
+											className="w-full justify-start p-3 h-auto hover:bg-blue-50 dark:hover:bg-blue-950/50"
+											onClick={() => handleDemoLogin(user)}
+										>
+											<div className="text-left">
+												<div className="font-medium text-gray-900 dark:text-gray-100">
+													{user.name}
+												</div>
+												<div className="text-sm text-gray-600 dark:text-gray-400">
+													{user.email}
+												</div>
+												<div className="text-xs text-blue-600 dark:text-blue-400">
+													{user.role}
+												</div>
+											</div>
+										</Button>
+									))}
+								</div>
+								<div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+									<p className="text-xs text-gray-500 dark:text-gray-400">
+										Contraseña para todos:{" "}
+										<code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">
+											123456
+										</code>
+									</p>
+								</div>
+							</div>
+						)}
+
 						<div className="mb-8 text-center">
 							<div className="flex items-center justify-center mb-6">
 								<div className="relative">
@@ -275,7 +370,7 @@ export function LoginForm({
 												</div>
 											</FormControl>
 											<FormDescription className="text-gray-500 dark:text-gray-400">
-												Mínimo 6 caracteres
+												Mínimo 6 caracteres (Demo: 123456)
 											</FormDescription>
 											<FormMessage />
 										</FormItem>
@@ -342,9 +437,17 @@ export function LoginForm({
 								<h2 className="text-3xl font-bold mb-4 drop-shadow-lg">
 									Sistema de Gestión de Citas
 								</h2>
-								<p className="text-lg drop-shadow-md">
+								<p className="text-lg drop-shadow-md mb-6">
 									Administra tus citas de manera eficiente y profesional
 								</p>
+								<div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
+									<p className="text-sm font-medium">
+										🎭 Usando datos de demostración
+									</p>
+									<p className="text-xs opacity-80 mt-1">
+										Listo para integración con backend
+									</p>
+								</div>
 							</div>
 						</div>
 					</div>

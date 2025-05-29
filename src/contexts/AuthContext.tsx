@@ -9,6 +9,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { mockDataManager, type MockUser } from "@/lib/mockData";
 
 interface User {
 	id: string;
@@ -36,7 +37,21 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8002";
+// Función para simular delay de red
+const simulateNetworkDelay = (): Promise<void> => {
+	return new Promise((resolve) =>
+		setTimeout(resolve, Math.random() * 800 + 300),
+	);
+};
+
+// Función para convertir MockUser a User
+const convertMockUser = (mockUser: MockUser): User => ({
+	id: mockUser.id,
+	email: mockUser.correo,
+	name: mockUser.nombre,
+	role: mockUser.rol,
+	profileId: mockUser.profileId,
+});
 
 export function AuthProvider({ children }: { children: ReactNode }) {
 	const [user, setUser] = useState<User | null>(null);
@@ -54,57 +69,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			setLoading(true);
 			setError(null);
 
+			// Simular delay de red
+			await simulateNetworkDelay();
+
 			// Verificar token almacenado
 			const token = localStorage.getItem("authToken");
-			if (!token) {
+			const userJson = localStorage.getItem("currentUser");
+
+			if (!token || !userJson) {
 				setUser(null);
 				setLoading(false);
 				return;
 			}
 
-			// Validar token con el backend
-			const response = await fetch(`${API_URL}/auth/verify`, {
-				method: "GET",
-				headers: {
-					Authorization: `Bearer ${token}`,
-					"Content-Type": "application/json",
-				},
-				credentials: "include",
-			});
+			// Validar que el usuario existe en nuestros datos mock
+			const userData = JSON.parse(userJson);
+			const mockUser = mockDataManager.authenticateUser(
+				userData.email,
+				userData.originalPassword || "123456",
+			);
 
-			if (response.ok) {
-				const data = await response.json();
-				if (data.success && data.user) {
-					setUser(data.user);
+			if (mockUser) {
+				const convertedUser = convertMockUser(mockUser);
+				setUser(convertedUser);
 
-					// Si tiene profileId, guardarlo para las citas
-					if (data.user.profileId) {
-						localStorage.setItem("selectedProfile", data.user.profileId);
-					}
-				} else {
-					// Token inválido
-					localStorage.removeItem("authToken");
-					localStorage.removeItem("selectedProfile");
-					setUser(null);
+				// Si tiene profileId, guardarlo para las citas
+				if (convertedUser.profileId) {
+					localStorage.setItem("selectedProfile", convertedUser.profileId);
 				}
 			} else {
-				// Token inválido o expirado
+				// Usuario no válido, limpiar storage
 				localStorage.removeItem("authToken");
+				localStorage.removeItem("currentUser");
 				localStorage.removeItem("selectedProfile");
 				setUser(null);
-
-				if (response.status === 401) {
-					// No mostrar error si simplemente no está autenticado
-					console.log("Usuario no autenticado");
-				} else {
-					setError("Error al verificar la sesión");
-				}
 			}
 		} catch (err) {
 			console.error("Error verificando autenticación:", err);
 			setError("Error de conexión al verificar la sesión");
 			setUser(null);
 			localStorage.removeItem("authToken");
+			localStorage.removeItem("currentUser");
 			localStorage.removeItem("selectedProfile");
 		} finally {
 			setLoading(false);
@@ -116,55 +121,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			setLoading(true);
 			setError(null);
 
-			const response = await fetch(`${API_URL}/auth/login`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(credentials),
-				credentials: "include",
-			});
+			// Simular delay de red
+			await simulateNetworkDelay();
 
-			const data = await response.json();
+			// Autenticar con mock data
+			const mockUser = mockDataManager.authenticateUser(
+				credentials.email,
+				credentials.password,
+			);
 
-			if (response.ok && data.success) {
-				// Guardar token
-				if (data.token) {
-					localStorage.setItem("authToken", data.token);
-				}
+			if (mockUser) {
+				// Crear token simulado
+				const token = `mock_token_${mockUser.id}_${Date.now()}`;
 
-				// Guardar usuario
-				setUser(data.user);
+				// Guardar en localStorage
+				localStorage.setItem("authToken", token);
+
+				// Guardar usuario completo (incluyendo password para re-validación)
+				const userWithPassword = {
+					...mockUser,
+					originalPassword: credentials.password,
+				};
+				localStorage.setItem("currentUser", JSON.stringify(userWithPassword));
+
+				// Convertir y establecer usuario
+				const convertedUser = convertMockUser(mockUser);
+				setUser(convertedUser);
 
 				// Si tiene profileId, guardarlo
-				if (data.user.profileId) {
-					localStorage.setItem("selectedProfile", data.user.profileId);
+				if (convertedUser.profileId) {
+					localStorage.setItem("selectedProfile", convertedUser.profileId);
 				}
 
 				toast.success("Inicio de sesión exitoso");
 
 				// Redirigir según el rol
-				if (data.user.role === "psicologo") {
+				if (
+					convertedUser.role === "psicologo" ||
+					convertedUser.role === "admin"
+				) {
 					router.push("/admin/citas");
-				} else if (data.user.role === "admin") {
-					router.push("/admin");
 				} else {
 					router.push("/");
 				}
 
 				return true;
 			}
-				// Error de autenticación
-				const errorMessage = data.message || "Credenciales incorrectas";
+				// Credenciales incorrectas
+				const errorMessage = "Correo electrónico o contraseña incorrectos";
 				setError(errorMessage);
 				toast.error(errorMessage);
 				return false;
 		} catch (err) {
 			console.error("Error en login:", err);
-			const errorMessage =
-				err instanceof Error
-					? err.message
-					: "Error de conexión con el servidor";
+			const errorMessage = "Error de conexión con el servidor";
 			setError(errorMessage);
 			toast.error("Error al conectar con el servidor. Verifica tu conexión.");
 			return false;
@@ -177,29 +187,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		try {
 			setLoading(true);
 
-			const token = localStorage.getItem("authToken");
-
-			// Llamar al endpoint de logout
-			if (token) {
-				try {
-					await fetch(`${API_URL}/auth/logout`, {
-						method: "POST",
-						headers: {
-							Authorization: `Bearer ${token}`,
-							"Content-Type": "application/json",
-						},
-						credentials: "include",
-					});
-				} catch (err) {
-					// Continuar con el logout local aunque falle la petición
-					console.error("Error al cerrar sesión en el servidor:", err);
-				}
-			}
+			// Simular delay de red
+			await simulateNetworkDelay();
 
 			// Limpiar estado local
 			setUser(null);
 			setError(null);
 			localStorage.removeItem("authToken");
+			localStorage.removeItem("currentUser");
 			localStorage.removeItem("selectedProfile");
 
 			toast.success("Sesión cerrada correctamente");
