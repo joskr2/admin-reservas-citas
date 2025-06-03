@@ -91,7 +91,7 @@ export default function CitasPage() {
 	};
 
 	const handleNuevaCita = () => {
-		router.push("/admin/citas/nueva");
+		router.push("citas/nueva");
 	};
 
 	const handleCitaClick = (cita: Cita) => {

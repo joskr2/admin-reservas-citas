@@ -66,7 +66,7 @@ export default function CitasList() {
   }, [currentProfile]);
 
   const handleNuevaCita = () => {
-    router.push("/admin/citas/nueva");
+    router.push("/citas/nueva");
   };
 
   if (isLoading) {

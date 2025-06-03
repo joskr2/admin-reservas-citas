@@ -10,10 +10,10 @@ export async function middleware(request: NextRequest) {
 
 	// Rutas que requieren autenticación
 	const protectedRoutes = [
-		"/admin",
-		"/admin/citas",
-		"/admin/citas/nueva",
-		"/admin/profiles",
+		"/dashboard",
+		"/citas",
+		"/citas/nueva",
+		"/profiles",
 	];
 	const isProtectedRoute = protectedRoutes.some((route) =>
 		pathname.startsWith(route),
@@ -108,7 +108,7 @@ export async function middleware(request: NextRequest) {
 					// Si el token es válido y no ha expirado
 					if (tokenAge <= maxAge) {
 						console.log("✅ Middleware - Usuario ya autenticado, redirigiendo");
-						return NextResponse.redirect(new URL("/admin/citas", request.url));
+						return NextResponse.redirect(new URL("/citas", request.url));
 					}
 				}
 			} catch (error) {

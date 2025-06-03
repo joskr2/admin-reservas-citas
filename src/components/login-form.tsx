@@ -403,18 +403,6 @@ export function LoginForm({
 										</div>
 									)}
 								</Button>
-
-								<div className="text-center">
-									<p className="text-sm text-gray-600 dark:text-gray-400">
-										¿No tienes una cuenta?{" "}
-										<Link
-											href="/register"
-											className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
-										>
-											Regístrate aquí
-										</Link>
-									</p>
-								</div>
 							</form>
 						</Form>
 					</div>

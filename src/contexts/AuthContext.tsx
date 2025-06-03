@@ -197,7 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 					convertedUser.role === "psicologo" ||
 					convertedUser.role === "admin"
 				) {
-					router.push("/admin/citas");
+					router.push("/citas");
 				} else {
 					router.push("/");
 				}

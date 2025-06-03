@@ -305,7 +305,7 @@ export default function CitasOverview({
 
 							{/* ➕ Nueva cita */}
 							<Button
-								onClick={() => router.push("/admin/citas/nueva")}
+								onClick={() => router.push("/citas/nueva")}
 								className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
 							>
 								<Plus className="w-4 h-4 mr-2" />

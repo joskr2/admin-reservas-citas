@@ -100,20 +100,20 @@ export default function HomePage() {
 										<Button
 											size="lg"
 											className="h-16 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
-											onClick={() => router.push("/admin/citas/nueva")}
+											onClick={() => router.push("citas/nueva")}
 										>
 											<CalendarIcon className="w-6 h-6 mr-3" />
 											Programar Nueva Cita
 										</Button>
 										<Button
-											variant="outline"
 											size="lg"
-											className="h-16 px-8 border-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
-											onClick={() => router.push("/admin/citas")}
+											className="h-16 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-blue-500/25"
+											onClick={() => router.push("citas")}
 										>
-											Ver Calendario
 											<ArrowRightIcon className="w-5 h-5 ml-3" />
+											Ver citas
 										</Button>
+
 									</motion.div>
 								) : (
 									<motion.div
@@ -125,7 +125,7 @@ export default function HomePage() {
 												src="/loginimage.webp"
 												alt="Inicia sesión para acceder"
 												fill
-                        priority
+												priority
 												className="object-cover"
 											/>
 											<div className="absolute inset-0 bg-gradient-to-r from-blue-900/60 via-purple-900/40 to-blue-900/60" />
@@ -161,7 +161,7 @@ export default function HomePage() {
 									<motion.div variants={fadeInUp}>
 										<Card
 											className="group h-full shadow-xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:bg-white/90 dark:hover:bg-gray-800/90 cursor-pointer"
-											onClick={() => router.push("/admin/citas")}
+											onClick={() => router.push("/citas")}
 										>
 											<CardHeader className="text-center pb-4">
 												<div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
@@ -187,7 +187,7 @@ export default function HomePage() {
 									<motion.div variants={fadeInUp}>
 										<Card
 											className="group h-full shadow-xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:bg-white/90 dark:hover:bg-gray-800/90 cursor-pointer"
-											onClick={() => router.push("/admin/citas/nueva")}
+											onClick={() => router.push("/citas/nueva")}
 										>
 											<CardHeader className="text-center pb-4">
 												<div className="w-16 h-16 bg-gradient-to-r from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">

@@ -178,7 +178,7 @@ export default function CreateAppointmentForm() {
 
 			if (response.success) {
 				toast.success("Cita creada con éxito");
-				router.push("/admin/citas");
+				router.push("/citas");
 				router.refresh();
 			} else {
 				toast.error(response.message || "Error al crear la cita.");

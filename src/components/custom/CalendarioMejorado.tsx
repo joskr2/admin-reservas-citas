@@ -74,7 +74,7 @@ export default function CalendarioMejorado() {
   };
 
   const handleNuevaCita = () => {
-    router.push("/admin/citas/nueva");
+    router.push("/citas/nueva");
   };
 
   const handleCitaClick = (cita: Cita) => {

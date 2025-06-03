@@ -45,8 +45,8 @@ export default function AppHeader({
 	}, []);
 
 	const isHomePage = pathname === "/";
-	const isCalendarPage = pathname === "/admin/citas";
-	const isNewAppointmentPage = pathname === "/admin/citas/nueva";
+	const isCalendarPage = pathname === "/citas";
+	const isNewAppointmentPage = pathname === "/citas/nueva";
 	const isDashboardPage = pathname === "/dashboard"; // 🆕
 
 	// 🆕 Determinar si el usuario puede ver el dashboard
@@ -70,14 +70,14 @@ export default function AppHeader({
 			showWhen: "authenticated" as const,
 		},
 		{
-			href: "/admin/citas",
+			href: "/citas",
 			label: "Calendario",
 			icon: Calendar,
 			active: isCalendarPage,
 			showWhen: "authenticated" as const,
 		},
 		{
-			href: "/admin/citas/nueva",
+			href: "/citas/nueva",
 			label: "Nueva Cita",
 			icon: Plus,
 			active: isNewAppointmentPage,
