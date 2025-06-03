@@ -125,6 +125,7 @@ export default function HomePage() {
 												src="/loginimage.webp"
 												alt="Inicia sesión para acceder"
 												fill
+                        priority
 												className="object-cover"
 											/>
 											<div className="absolute inset-0 bg-gradient-to-r from-blue-900/60 via-purple-900/40 to-blue-900/60" />
