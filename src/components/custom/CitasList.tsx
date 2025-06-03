@@ -15,6 +15,7 @@ import { toast } from "sonner";
 export default function CitasList() {
   const [citas, setCitas] = useState<Cita[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const [currentProfile, setCurrentProfile] = useState<any>(null);
 
   useEffect(() => {

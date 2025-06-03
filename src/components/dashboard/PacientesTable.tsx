@@ -200,12 +200,10 @@ export default function PacientesTable({
 	// 🎮 Acciones de pacientes
 	const handleViewPaciente = (pacienteId: string) => {
 		toast.info("Vista detallada del paciente en desarrollo");
-		// TODO: Implementar modal o página de detalles
 	};
 
 	const handleEditPaciente = (pacienteId: string) => {
 		toast.info("Edición de paciente en desarrollo");
-		// TODO: Implementar formulario de edición
 	};
 
 	const handleDeletePaciente = (pacienteId: string) => {
@@ -214,12 +212,10 @@ export default function PacientesTable({
 			return;
 		}
 		toast.info("Eliminación de paciente en desarrollo");
-		// TODO: Implementar confirmación y eliminación
 	};
 
 	const handleNewPaciente = () => {
 		toast.info("Creación de paciente en desarrollo");
-		// TODO: Implementar formulario de nuevo paciente
 	};
 
 	// 🎨 Obtener estado del paciente
@@ -228,27 +224,27 @@ export default function PacientesTable({
 			return {
 				label: "Activo",
 				color:
-					"bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
+					"bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800",
 			};
 		}
 		if (paciente.proximaCita) {
 			return {
 				label: "Programado",
 				color:
-					"bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+					"bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800",
 			};
 		}
 		if (paciente.ultimaCita) {
 			return {
 				label: "Inactivo",
 				color:
-					"bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
+					"bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800/50 dark:text-slate-300 dark:border-slate-700",
 			};
 		}
 		return {
 			label: "Nuevo",
 			color:
-				"bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
+				"bg-violet-100 text-violet-800 border-violet-200 dark:bg-violet-900/20 dark:text-violet-400 dark:border-violet-800",
 		};
 	};
 
@@ -262,25 +258,29 @@ export default function PacientesTable({
 	};
 
 	return (
-		<Card>
-			<CardHeader>
+		<Card className="shadow-xl border-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg transition-all duration-300">
+			<CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 border-b border-purple-100 dark:border-purple-800/50">
 				<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 					<div>
-						<CardTitle className="flex items-center gap-2">
-							<Users className="w-6 h-6 text-purple-600" />
-							Gestión de Pacientes
+						<CardTitle className="flex items-center gap-3 text-2xl">
+							<div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+								<Users className="w-6 h-6 text-white" />
+							</div>
+							<span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent dark:from-purple-400 dark:to-pink-400">
+								Gestión de Pacientes
+							</span>
 						</CardTitle>
-						<CardDescription>
+						<CardDescription className="text-gray-600 dark:text-gray-400 mt-2">
 							{isAdmin
 								? `Administra todos los pacientes del sistema (${pacientes.length} total)`
 								: `Gestiona tus pacientes asignados (${pacientes.length} total)`}
 						</CardDescription>
 					</div>
 
-					<div className="flex flex-col sm:flex-row gap-2">
+					<div className="flex flex-col sm:flex-row gap-3">
 						<Button
 							onClick={handleNewPaciente}
-							className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+							className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 dark:from-purple-500 dark:to-pink-500 dark:hover:from-purple-600 dark:hover:to-pink-600"
 						>
 							<Plus className="w-4 h-4 mr-2" />
 							Nuevo Paciente
@@ -289,16 +289,16 @@ export default function PacientesTable({
 				</div>
 			</CardHeader>
 
-			<CardContent className="space-y-4">
+			<CardContent className="p-6 space-y-6">
 				{/* 🔍 Controles de búsqueda y filtros */}
 				<div className="flex flex-col sm:flex-row gap-4">
 					<div className="relative flex-1">
-						<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+						<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
 						<Input
 							placeholder="Buscar por nombre o correo..."
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
-							className="pl-10"
+							className="pl-10 bg-white dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
 						/>
 					</div>
 
@@ -307,7 +307,11 @@ export default function PacientesTable({
 							variant={filterType === "all" ? "default" : "outline"}
 							size="sm"
 							onClick={() => setFilterType("all")}
-							className="whitespace-nowrap"
+							className={`whitespace-nowrap ${
+								filterType === "all"
+									? "bg-purple-600 hover:bg-purple-700 text-white dark:bg-purple-500 dark:hover:bg-purple-600"
+									: "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-950/50"
+							}`}
 						>
 							Todos ({pacientes.length})
 						</Button>
@@ -315,7 +319,11 @@ export default function PacientesTable({
 							variant={filterType === "active" ? "default" : "outline"}
 							size="sm"
 							onClick={() => setFilterType("active")}
-							className="whitespace-nowrap"
+							className={`whitespace-nowrap ${
+								filterType === "active"
+									? "bg-purple-600 hover:bg-purple-700 text-white dark:bg-purple-500 dark:hover:bg-purple-600"
+									: "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-950/50"
+							}`}
 						>
 							Activos (
 							{
@@ -328,7 +336,11 @@ export default function PacientesTable({
 							variant={filterType === "inactive" ? "default" : "outline"}
 							size="sm"
 							onClick={() => setFilterType("inactive")}
-							className="whitespace-nowrap"
+							className={`whitespace-nowrap ${
+								filterType === "inactive"
+									? "bg-purple-600 hover:bg-purple-700 text-white dark:bg-purple-500 dark:hover:bg-purple-600"
+									: "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-950/50"
+							}`}
 						>
 							Inactivos (
 							{
@@ -342,63 +354,91 @@ export default function PacientesTable({
 				</div>
 
 				{/* 📊 Estadísticas rápidas */}
-				<div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+				<div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 bg-gradient-to-r from-purple-50/50 to-pink-50/50 dark:from-purple-950/20 dark:to-pink-950/20 rounded-xl border border-purple-100 dark:border-purple-800/50">
 					<div className="text-center">
-						<div className="text-2xl font-bold text-blue-600">
+						<div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
 							{pacientes.length}
 						</div>
-						<div className="text-sm text-gray-600">Total Pacientes</div>
+						<div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+							Total Pacientes
+						</div>
 					</div>
 					<div className="text-center">
-						<div className="text-2xl font-bold text-green-600">
+						<div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
 							{pacientes.filter((p) => p.citasPendientes > 0).length}
 						</div>
-						<div className="text-sm text-gray-600">Con Citas Pendientes</div>
+						<div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+							Con Citas Pendientes
+						</div>
 					</div>
 					<div className="text-center">
-						<div className="text-2xl font-bold text-purple-600">
+						<div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
 							{pacientes.reduce((sum, p) => sum + p.totalCitas, 0)}
 						</div>
-						<div className="text-sm text-gray-600">Total de Citas</div>
+						<div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+							Total de Citas
+						</div>
 					</div>
 					<div className="text-center">
-						<div className="text-2xl font-bold text-amber-600">
+						<div className="text-3xl font-bold text-amber-600 dark:text-amber-400">
 							{Math.round(
 								pacientes.reduce((sum, p) => sum + p.totalCitas, 0) /
 									Math.max(pacientes.length, 1),
 							)}
 						</div>
-						<div className="text-sm text-gray-600">Promedio por Paciente</div>
+						<div className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+							Promedio por Paciente
+						</div>
 					</div>
 				</div>
 
 				{/* 📋 Tabla de pacientes */}
 				{isLoading ? (
-					<div className="flex justify-center py-8">
-						<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600" />
+					<div className="flex justify-center py-12">
+						<div className="relative">
+							<div className="w-12 h-12 border-4 border-purple-200 dark:border-purple-800 border-t-purple-600 dark:border-t-purple-400 rounded-full animate-spin" />
+						</div>
 					</div>
 				) : filteredPacientes.length === 0 ? (
-					<div className="text-center py-8">
-						<Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-						<p className="text-gray-500">
+					<div className="text-center py-12 bg-gray-50/50 dark:bg-gray-800/30 rounded-xl border border-gray-200 dark:border-gray-700">
+						<Users className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
+						<p className="text-gray-500 dark:text-gray-400 text-lg font-medium">
 							{searchTerm
 								? "No se encontraron pacientes con ese criterio"
 								: "No hay pacientes registrados"}
 						</p>
 					</div>
 				) : (
-					<div className="rounded-md border">
+					<div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-800/50 shadow-sm">
 						<Table>
 							<TableHeader>
-								<TableRow>
-									<TableHead>Paciente</TableHead>
-									<TableHead>Contacto</TableHead>
-									<TableHead>Citas</TableHead>
-									<TableHead>Última Consulta</TableHead>
-									<TableHead>Próxima Cita</TableHead>
-									{isAdmin && <TableHead>Psicólogo</TableHead>}
-									<TableHead>Estado</TableHead>
-									<TableHead className="w-[50px]">Acciones</TableHead>
+								<TableRow className="bg-gray-50/80 dark:bg-gray-800/80 border-b border-gray-200 dark:border-gray-700">
+									<TableHead className="text-gray-700 dark:text-gray-300 font-semibold">
+										Paciente
+									</TableHead>
+									<TableHead className="text-gray-700 dark:text-gray-300 font-semibold">
+										Contacto
+									</TableHead>
+									<TableHead className="text-gray-700 dark:text-gray-300 font-semibold">
+										Citas
+									</TableHead>
+									<TableHead className="text-gray-700 dark:text-gray-300 font-semibold">
+										Última Consulta
+									</TableHead>
+									<TableHead className="text-gray-700 dark:text-gray-300 font-semibold">
+										Próxima Cita
+									</TableHead>
+									{isAdmin && (
+										<TableHead className="text-gray-700 dark:text-gray-300 font-semibold">
+											Psicólogo
+										</TableHead>
+									)}
+									<TableHead className="text-gray-700 dark:text-gray-300 font-semibold">
+										Estado
+									</TableHead>
+									<TableHead className="w-[50px] text-gray-700 dark:text-gray-300 font-semibold">
+										Acciones
+									</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
@@ -408,16 +448,18 @@ export default function PacientesTable({
 									return (
 										<TableRow
 											key={paciente.id}
-											className="hover:bg-gray-50 dark:hover:bg-gray-800/50"
+											className="hover:bg-purple-50/50 dark:hover:bg-purple-950/20 transition-colors duration-200 border-b border-gray-100 dark:border-gray-700/50"
 										>
 											<TableCell>
 												<div className="flex items-center gap-3">
-													<div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/50 rounded-full flex items-center justify-center">
-														<User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+													<div className="w-12 h-12 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50 rounded-full flex items-center justify-center shadow-sm">
+														<User className="w-6 h-6 text-purple-600 dark:text-purple-400" />
 													</div>
 													<div>
-														<div className="font-medium">{paciente.nombre}</div>
-														<div className="text-sm text-gray-500">
+														<div className="font-semibold text-gray-900 dark:text-gray-100">
+															{paciente.nombre}
+														</div>
+														<div className="text-sm text-gray-500 dark:text-gray-400">
 															ID: {paciente.id}
 														</div>
 													</div>
@@ -426,25 +468,30 @@ export default function PacientesTable({
 											<TableCell>
 												<div className="space-y-1">
 													<div className="flex items-center gap-2 text-sm">
-														<Mail className="w-4 h-4 text-gray-400" />
-														{paciente.correo}
+														<Mail className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+														<span className="text-gray-700 dark:text-gray-300">
+															{paciente.correo}
+														</span>
 													</div>
-													<div className="flex items-center gap-2 text-sm text-gray-500">
-														<Phone className="w-4 h-4 text-gray-400" />
+													<div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+														<Phone className="w-4 h-4 text-gray-400 dark:text-gray-500" />
 														{paciente.telefono}
 													</div>
 												</div>
 											</TableCell>
 											<TableCell>
-												<div className="space-y-1">
+												<div className="space-y-2">
 													<div className="flex items-center gap-2">
-														<TrendingUp className="w-4 h-4 text-gray-400" />
-														<span className="font-medium">
+														<TrendingUp className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+														<span className="font-semibold text-gray-900 dark:text-gray-100">
 															{paciente.totalCitas}
 														</span>
 													</div>
 													{paciente.citasPendientes > 0 && (
-														<Badge variant="secondary" className="text-xs">
+														<Badge
+															variant="secondary"
+															className="text-xs bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800"
+														>
 															{paciente.citasPendientes} pendientes
 														</Badge>
 													)}
@@ -453,17 +500,19 @@ export default function PacientesTable({
 											<TableCell>
 												{paciente.ultimaCita ? (
 													<div className="flex items-center gap-2 text-sm">
-														<Clock className="w-4 h-4 text-gray-400" />
-														{new Date(paciente.ultimaCita).toLocaleDateString(
-															"es-ES",
-															{
-																day: "2-digit",
-																month: "short",
-															},
-														)}
+														<Clock className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+														<span className="text-gray-700 dark:text-gray-300">
+															{new Date(paciente.ultimaCita).toLocaleDateString(
+																"es-ES",
+																{
+																	day: "2-digit",
+																	month: "short",
+																},
+															)}
+														</span>
 													</div>
 												) : (
-													<span className="text-gray-400 text-sm">
+													<span className="text-gray-400 dark:text-gray-500 text-sm">
 														Sin citas
 													</span>
 												)}
@@ -471,61 +520,74 @@ export default function PacientesTable({
 											<TableCell>
 												{paciente.proximaCita ? (
 													<div className="flex items-center gap-2 text-sm">
-														<Calendar className="w-4 h-4 text-gray-400" />
-														{new Date(paciente.proximaCita).toLocaleDateString(
-															"es-ES",
-															{
+														<Calendar className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+														<span className="text-gray-700 dark:text-gray-300">
+															{new Date(
+																paciente.proximaCita,
+															).toLocaleDateString("es-ES", {
 																day: "2-digit",
 																month: "short",
-															},
-														)}
+															})}
+														</span>
 													</div>
 												) : (
-													<span className="text-gray-400 text-sm">
+													<span className="text-gray-400 dark:text-gray-500 text-sm">
 														Sin programar
 													</span>
 												)}
 											</TableCell>
 											{isAdmin && (
 												<TableCell>
-													<div className="text-sm">
+													<div className="text-sm font-medium text-gray-700 dark:text-gray-300">
 														{paciente.psicologoAsignado}
 													</div>
 												</TableCell>
 											)}
 											<TableCell>
-												<Badge className={status.color}>{status.label}</Badge>
+												<Badge className={`${status.color} border font-medium`}>
+													{status.label}
+												</Badge>
 											</TableCell>
 											<TableCell>
 												<DropdownMenu>
 													<DropdownMenuTrigger asChild>
-														<Button variant="ghost" className="h-8 w-8 p-0">
-															<MoreHorizontal className="h-4 w-4" />
+														<Button
+															variant="ghost"
+															className="h-8 w-8 p-0 hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors"
+														>
+															<MoreHorizontal className="h-4 w-4 text-gray-500 dark:text-gray-400" />
 														</Button>
 													</DropdownMenuTrigger>
-													<DropdownMenuContent align="end">
-														<DropdownMenuLabel>Acciones</DropdownMenuLabel>
-														<DropdownMenuSeparator />
+													<DropdownMenuContent
+														align="end"
+														className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-xl"
+													>
+														<DropdownMenuLabel className="text-gray-900 dark:text-gray-100">
+															Acciones
+														</DropdownMenuLabel>
+														<DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-700" />
 														<DropdownMenuItem
 															onClick={() => handleViewPaciente(paciente.id)}
+															className="text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-950/50 cursor-pointer"
 														>
 															<Eye className="mr-2 h-4 w-4" />
 															Ver historial
 														</DropdownMenuItem>
 														<DropdownMenuItem
 															onClick={() => handleEditPaciente(paciente.id)}
+															className="text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-950/50 cursor-pointer"
 														>
 															<Edit className="mr-2 h-4 w-4" />
 															Editar datos
 														</DropdownMenuItem>
 														{isAdmin && (
 															<>
-																<DropdownMenuSeparator />
+																<DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-700" />
 																<DropdownMenuItem
 																	onClick={() =>
 																		handleDeletePaciente(paciente.id)
 																	}
-																	className="text-red-600"
+																	className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 cursor-pointer"
 																>
 																	<Trash2 className="mr-2 h-4 w-4" />
 																	Eliminar

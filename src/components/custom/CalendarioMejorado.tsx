@@ -26,6 +26,7 @@ export default function CalendarioMejorado() {
   const [vistaActual, setVistaActual] = useState<VistaCalendario>("mes");
   const [citaSeleccionada, setCitaSeleccionada] = useState<Cita | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const [currentProfile, setCurrentProfile] = useState<any>(null);
 
   useEffect(() => {
